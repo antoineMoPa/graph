@@ -1,3 +1,0 @@
-q.ready(function(){
-	q.d(".glaph canvas").elements[0]
-}
