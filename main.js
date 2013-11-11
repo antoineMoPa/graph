@@ -52,8 +52,6 @@ q.ready(function(){
     drawLines()
 })
 
-
-
 function drawLines(){
     var c = app.canvas
     
@@ -62,22 +60,13 @@ function drawLines(){
     var toX = q.d(".node").left()
     var toY = q.d(".node").top()
     
-    c.strokeStyle = "#FFC322"
-    c.lineWidth = 200
-    drawLine(100,100,toX,toY+20)
+    // c.strokeStyle = "#FFC322"
+    // c.lineWidth = 5
+    // drawLine(100,100,toX,toY+20)
     
-    c.strokeStyle = "#FF9130"
-    c.lineWidth = 80
-    drawLine(100,100,toX,toY+20)
-    
-    c.strokeStyle = "#FF3038"
-    c.lineWidth = 30
-    drawLine(100,100,toX,toY+20)
-
-    c.strokeStyle = "#000"
-    c.lineWidth = 1
-    drawLine(100,100,toX,toY+20)
-
+    c.strokeStyle = "#FFFFFF"
+    c.lineWidth = 2
+    drawLine(100,100,toX,toY+47)
 }
 
 function drawLine(x,y,toX,toY){
