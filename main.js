@@ -4,7 +4,8 @@ q.d.fn.dragDrop = function(settings) {
         
     var settings = q.extend(settings,{
         handle: "this",
-        dragOver: function(){}
+        dragOver: function(){},
+        onDrag: function(){}
     })
     
     this.each(function(){
@@ -13,10 +14,8 @@ q.d.fn.dragDrop = function(settings) {
 
         var initialX = 0
         var initialY = 0
-        //var handle = settings.handle == "this" ? el:el.find(settings.handle) 
-        //console.log(el)
-        handle = el.find(settings.handle)
-        console.log(handle)
+        var handle = settings.handle == "this" ? el:el.find(settings.handle) 
+        
         handle.on("mousedown",function(e){
             initialX = e.pageX - el.left()
             initialY = e.pageY - el.top()
@@ -26,10 +25,12 @@ q.d.fn.dragDrop = function(settings) {
             el.top(e.pageY - initialY)
             el.left(e.pageX - initialX)
             body.on("mouseup",mouseUp)
+            settings.onDrag()
         }
         function mouseUp(){
             body.unbind("mouseup",mouseUp)
             body.unbind("mousemove",drag)
+            settings.dragOver()
         }
     })
     return this
@@ -42,16 +43,12 @@ q.ready(function(){
     
     q.d(window).on("resize",setGlaphSize)
     setGlaphSize()
-
     
     //Testing code
     
-    q.d(".node").dragDrop({handle:".node-header"})
+    q.d(".node").dragDrop({handle:".node-header",
+                           onDrag:drawLines})
 
-    var c = app.canvas
-    c.fillStyle = "#aaa"
-    c.fillRect(0,0,app.width,app.height)
-    
     drawLines()
 })
 
@@ -60,25 +57,49 @@ q.ready(function(){
 function drawLines(){
     var c = app.canvas
     
+    //Testing code
+    clearCanvas()
+    var toX = q.d(".node").left()
+    var toY = q.d(".node").top()
+    
+    c.strokeStyle = "#FFC322"
+    c.lineWidth = 200
+    drawLine(100,100,toX,toY+20)
+    
+    c.strokeStyle = "#FF9130"
+    c.lineWidth = 80
+    drawLine(100,100,toX,toY+20)
+    
+    c.strokeStyle = "#FF3038"
+    c.lineWidth = 30
+    drawLine(100,100,toX,toY+20)
+
     c.strokeStyle = "#000"
     c.lineWidth = 1
-    drawLine(0,0,100,100)
+    drawLine(100,100,toX,toY+20)
+
 }
 
 function drawLine(x,y,toX,toY){
     var c = app.canvas
+    c.fillStyle = "rgba(0,0,0,0)"
     c.beginPath()
     c.moveTo(x,y)
-    c.lineTo(toX,toY)
+    c.bezierCurveTo((toX-x)/2+x,y,(toX-x)/2+x,toY,toX,toY)
     c.stroke()
     c.fill()
+}
+
+function clearCanvas(){
+    var c = app.canvas
+    c.fillStyle = "#aaa"
+    c.fillRect(0,0,app.width,app.height)
 }
 
 function setGlaphSize(){
     app.height = q.d(".glaph").height()
     app.width = q.d(".glaph").width()
-
     app.canvasElement.width = app.width
     app.canvasElement.height = app.height
-    
+    clearCanvas()
 }
