@@ -1,15 +1,30 @@
 var app = {}
 
-q.d.fn.dragDrop = function(dragOver) {    
-    dragOver = dragOver || function(){}
+q.d.fn.dragDrop = function(settings) {    
+        
+    var settings = q.extend(settings,{
+        handle: "this",
+        dragOver: function(){}
+    })
+    
     this.each(function(){
         var body = q.d("body")
-        this.on("mousedown",function(){
-            body.on("mousemove",drag)
+        var el = this
 
+        var initialX = 0
+        var initialY = 0
+        //var handle = settings.handle == "this" ? el:el.find(settings.handle) 
+        //console.log(el)
+        handle = el.find(settings.handle)
+        console.log(handle)
+        handle.on("mousedown",function(e){
+            initialX = e.pageX - el.left()
+            initialY = e.pageY - el.top()
+            body.on("mousemove",drag)
         })
-        function drag(){
-            console.log("dragging")
+        function drag(e){
+            el.top(e.pageY - initialY)
+            el.left(e.pageX - initialX)
             body.on("mouseup",mouseUp)
         }
         function mouseUp(){
@@ -31,7 +46,7 @@ q.ready(function(){
     
     //Testing code
     
-    q.d(".node").dragDrop()
+    q.d(".node").dragDrop({handle:".node-header"})
 
     var c = app.canvas
     c.fillStyle = "#aaa"

@@ -115,13 +115,15 @@ q = shortcutLib;
 		
 		var rootElement = this.elements[0]
 		
-		this.element = null;
-		this.elements = [];
+        var ret = q.d(this)
+        
+		ret.element = null;
+		ret.elements = [];
 		
 		if(typeof selector == 'string')
-			this.elements = rootElement.querySelectorAll(selector)
+			ret.elements = rootElement.querySelectorAll(selector)
 			
-		return this
+		return ret
 	}
 	
 	
@@ -323,7 +325,7 @@ q = shortcutLib;
         this.each(function(){
             this.elements[0].removeEventListener(event,listener)
         })
-            return this
+        return this
     }
 
 	//Styling
@@ -404,7 +406,7 @@ q = shortcutLib;
     
     q.d.fn.top = function(arg){
         if(typeof arg == "undefined")
-            return parseInt(this.elements[0].style.top)
+            return parseInt(this.elements[0].style.top) || 0
         if(typeof arg == "string" && arg.indexOf("px") != -1){
             this.elements[0].style.top = arg
             return this
@@ -415,7 +417,7 @@ q = shortcutLib;
 
     q.d.fn.left = function(arg){
         if(typeof arg == "undefined")
-            return this.elements[0].style.left
+            return parseInt(this.elements[0].style.left) || 0
         if(typeof arg == "string" && arg.indexOf("px") != -1){
             this.elements[0].style.left = arg
             return this
