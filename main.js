@@ -50,8 +50,9 @@ q.ready(function(){
     
     //Testing code
   
-    q.d(".node").top(300).left(200)
-    
+    q.d(".node:nth-child(1)").top(100).left(200)
+    q.d(".node:nth-child(2)").top(120).left(500)
+
     q.d(".node").dragDrop({handle:".node-header",
                            onDrag:drawLines})
 
