@@ -1,7 +1,8 @@
 var app = {}
 
 q.d.fn.dragDrop = function(settings) {    
-        
+    var $ = this
+    
     var settings = q.extend(settings,{
         handle: "this",
         dragStart:function(){},
@@ -9,9 +10,9 @@ q.d.fn.dragDrop = function(settings) {
         onDrag: function(){}
     })
     
-    this.each(function(){
+    $.each(function(){
         var body = q.d("body")
-        var el = this
+        var el = q.d($.element)
 
         var initialX = 0
         var initialY = 0
@@ -44,11 +45,12 @@ q.ready(function(){
     app.canvasElement = app.glaph.find("canvas").elements[0]
     app.canvas = app.canvasElement.getContext("2d")
     app.nodeWidth = q.d(".node").width()
-    
     q.d(window).on("resize",setGlaphSize)
     setGlaphSize()
     
     //Testing code
+  
+    q.d(".node").top(300).left(200)
     
     q.d(".node").dragDrop({handle:".node-header",
                            onDrag:drawLines})

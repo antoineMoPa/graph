@@ -283,6 +283,7 @@ q = shortcutLib;
 		$.each(function(){
 			$.element.classList.toggle(className)
 		});
+
 		return $;
 	}
 	
@@ -322,8 +323,9 @@ q = shortcutLib;
 	}
     
     q.d.fn.unbind = function(event,listener){
+        var $ = this
         this.each(function(){
-            this.elements[0].removeEventListener(event,listener)
+            $.element.removeEventListener(event,listener)
         })
         return this
     }
@@ -405,24 +407,28 @@ q = shortcutLib;
     //Absolute positioning
     
     q.d.fn.top = function(arg){
+        var $ = this
         if(typeof arg == "undefined")
             return this.elements[0].offsetTop || 0
-        if(typeof arg == "string"){
-            this.elements[0].style.top = arg
-            return this
-        }
-        this.elements[0].style.top = arg+"px"
+        $.each(function(){            
+            if(typeof arg == "string")
+                this.element.style.top = arg
+            else
+                this.element.style.top = arg+"px"
+        })
         return this
     }
 
     q.d.fn.left = function(arg){
+        var $ = this
         if(typeof arg == "undefined")
             return this.elements[0].offsetLeft
-        if(typeof arg == "string"){
-            this.elements[0].style.left = arg
-            return this
-        }
-        this.elements[0].style.left = arg+"px"
+        $.each(function(){
+            if(typeof arg == "string")
+                $.element.style.left = arg
+            else
+                $.element.style.left = arg+"px"
+        })
         return this
     }
     
@@ -475,8 +481,8 @@ q = shortcutLib;
 		var $ = this
 		for(var i = 0; i < $.elements.length; i++ ){
 			$.element = $.elements[i]
-			
-			if(callback.call(q.d($.elements[i])) == -1){
+            
+			if(callback.call($) == -1){
 				return $
 			}
 		}
