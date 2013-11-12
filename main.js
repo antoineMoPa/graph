@@ -21,6 +21,7 @@ q.d.fn.dragDrop = function(settings) {
             initialY = e.pageY - el.top()
             body.on("mousemove",drag)
         })
+
         function drag(e){
             el.top(e.pageY - initialY)
             el.left(e.pageX - initialX)
@@ -40,6 +41,7 @@ q.ready(function(){
     app.glaph = q.d(".glaph")
     app.canvasElement = app.glaph.find("canvas").elements[0]
     app.canvas = app.canvasElement.getContext("2d")
+    app.nodeWidth = q.d(".node").width()
     
     q.d(window).on("resize",setGlaphSize)
     setGlaphSize()
@@ -57,16 +59,29 @@ function drawLines(){
     
     //Testing code
     clearCanvas()
-    var toX = q.d(".node").left()
-    var toY = q.d(".node").top()
     
+    var fromNode = q.d(".node:nth-child(1)")
+    var fromSocket = fromNode.find(".node-output:nth-child(1)")
+    var fromX = fromSocket.left() + fromNode.left()
+    var fromY = fromNode.top()+fromSocket.top() + 7
+    
+    var toNode = q.d(".node:nth-child(2)")
+    var toSocket = toNode.find(".node-input:nth-child(1)")
+    var toX = toNode.left()
+    var toY = toNode.top()+toSocket.top() + 7
+    
+    fromSocket.addClass("output-selected")
+    toSocket.addClass("input-selected")
+    
+    //Selected style
     // c.strokeStyle = "#FFC322"
     // c.lineWidth = 5
     // drawLine(100,100,toX,toY+20)
     
     c.strokeStyle = "#FFFFFF"
     c.lineWidth = 2
-    drawLine(100,100,toX,toY+47)
+    
+    drawLine(fromX,fromY,toX,toY)
 }
 
 function drawLine(x,y,toX,toY){
