@@ -28,6 +28,7 @@
     background:#f0f0f0;
     font-size:10px;
     color:#000;
+    cursor:pointer;
 }
 
 .node-header{
@@ -85,4 +86,11 @@
 .node-input:nth-child(5),
 .node-output:nth-child(5){
     top:120px;
+}
+
+.moving-link-input .node-input:not(.input-selected):hover{
+    box-shadow:0 0 4px #FFc532;
+}
+.moving-link-output .node-output:hover{
+    box-shadow:0 0 4px #FFc532;
 }

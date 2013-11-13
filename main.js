@@ -26,6 +26,7 @@ q.d.fn.dragDrop = function(settings) {
         })
 
         function drag(e){
+            e.preventDefault()
             el.top(e.pageY - initialY)
             el.left(e.pageX - initialX)
             body.on("mouseup",mouseUp)
@@ -49,34 +50,109 @@ q.ready(function(){
     setGlaphSize()
     
     //Testing code
-  
-    q.d(".node:nth-child(1)").top(100).left(200)
-    q.d(".node:nth-child(2)").top(120).left(500)
+    var fromNode = q.d(".node:nth-child(1)")
+    var toNode = q.d(".node:nth-child(2)")
+    var fromSocket = fromNode.find(".node-output:nth-child(1)")
+    var toSocket = toNode.find(".node-input:nth-child(1)")
+    
+    fromNode.top(100).left(200)
+    toNode.top(120).left(500)
 
     q.d(".node").dragDrop({handle:".node-header",
-                           onDrag:drawLines})
+                           onDrag:updateBoard})
+    
+    function updateBoard(){
+        socketLink(fromSocket,toSocket)
+    }
+    
+    q.d(".node-output, .node-input").on("mousedown",function(){
+        var socket = q.d(this)
+        var body = q.d("body")
+        var isInput = socket.hasClass("node-input")              
+        var sses =  isInput?q.d(".node-input"):q.d(".node-output")    //Same Side Empty Sockets
+        
+        if(!socket.hasClass("input-selected") &&
+           !socket.hasClass("output-selected"))
+            return false
 
-    drawLines()
+        socket.removeClass("input-selected")
+        socket.removeClass("output-selected")
+
+        body.on("mousemove",drag)
+        app.glaph.addClass("moving-link-"+(isInput?"input":"output"))
+
+        function drag(e){
+            e.preventDefault()
+            body.on("mouseup",bodyMouseUp)
+            sses.on("mouseup",ssesMouseUp)
+            
+            if(isInput)
+                socketLink(fromSocket,null,e.pageX,e.pageY)
+            else
+                socketLink(null,toSocket,e.pageX,e.pageY)
+        }
+        function unbindEvents(){
+            body.unbind("mouseup",bodyMouseUp)
+            sses.unbind("mouseup",ssesMouseUp)
+            body.unbind("mousemove",drag)
+        }
+        function bodyMouseUp(){
+            unbindEvents()
+            app.glaph.removeClass("moving-link-input")
+                     .removeClass("moving-link-output")
+        }
+        function ssesMouseUp(e){
+            unbindEvents()
+            if(isInput){
+                toSocket = q.d(this)
+                q.d(this).addClass("input-selected")
+            }
+            
+            else{
+                fromSocket = q.d(this)
+                q.d(this).addClass("output-selected")
+            }
+            socketLink(fromSocket,toSocket)
+        }
+    })
+    
+    socketLink(fromSocket,toSocket)
 })
 
-function drawLines(){
+function socketLink(fromSocket,toSocket,altX,altY){
+    // If fromSocket or toSocket is null, altX and altY 
+    // are used for positionning the corresponding end
+    // of the wire.
+    
     var c = app.canvas
     
     //Testing code
     clearCanvas()
     
-    var fromNode = q.d(".node:nth-child(1)")
-    var fromSocket = fromNode.find(".node-output:nth-child(1)")
-    var fromX = fromSocket.left() + fromNode.left() + 15
-    var fromY = fromNode.top()+fromSocket.top() + 7
+    var fromNode,fromX,fromY
     
-    var toNode = q.d(".node:nth-child(2)")
-    var toSocket = toNode.find(".node-input:nth-child(1)")
-    var toX = toNode.left() - 7
-    var toY = toNode.top()+toSocket.top() + 7
+    var toNode,toX,toY
     
-    fromSocket.addClass("output-selected")
-    toSocket.addClass("input-selected")
+    if(fromSocket != null){
+        fromNode = fromSocket.parent(2)
+        fromX = fromSocket.left() + fromNode.left() + 15
+        fromY = fromNode.top()+fromSocket.top() + 7
+        fromSocket.addClass("output-selected")
+    }
+    else{
+        fromX = altX
+        fromY = altY
+    }
+    if(toSocket != null){
+        toNode = toSocket.parent(2)
+        toX = toNode.left() - 7
+        toY = toNode.top()+toSocket.top() + 7
+        toSocket.addClass("input-selected")
+    }
+    else{
+        toX = altX
+        toY = altY
+    }
     
     //Selected style
     // c.strokeStyle = "#FFC322"

@@ -470,13 +470,40 @@ q = shortcutLib;
 			return null
 	}
 	
-	q.d.fn.parent = function(){
+	q.d.fn.parent = function(nthParent){
 		var el = this.elements[0]
-		this.elements = []
-		this.elements[0] = this.el.parentNode
-		return this
+        
+        while(nthParent--)
+            el = el.parentNode
+
+		return q.d(el)
 	}
-	
+    
+	/*
+      Be careful with q.each() !
+      It does not work as jQuery's each method,
+      q.each() iterates over selected elements
+      and puts the current element in q.element 
+      before calling your callback function.
+      
+      Examples:
+      
+      q.d("div").each(function(){
+          //Here, q.element is the current div
+          q.element.style.color = red
+      })
+      
+      q.d("div").each(function(){
+          //You can also do this
+          q.d(q.element).css({color:'red'})
+      })
+
+      q.d("div").each(function(){
+          //You can stop iterating by returning -1
+          if(thatWasEnough)
+              return -1;
+      })
+    */
 	q.d.fn.each = function(callback){
 		var $ = this
 		for(var i = 0; i < $.elements.length; i++ ){
