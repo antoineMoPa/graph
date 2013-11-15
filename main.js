@@ -1,53 +1,24 @@
 var app = {}
 
-q.d.fn.dragDrop = function(settings) {    
-    var $ = this
-    
-    var settings = q.extend(settings,{
-        handle: "this",
-        dragStart:function(){},
-        dragEnd: function(){},
-        onDrag: function(){}
-    })
-    
-    $.each(function(){
-        var body = q.d("body")
-        var el = q.d($.element)
-
-        var initialX = 0
-        var initialY = 0
-        var handle = settings.handle == "this" ? el:el.find(settings.handle) 
-        
-        handle.on("mousedown",function(e){
-            initialX = e.pageX - el.left()
-            initialY = e.pageY - el.top()
-            settings.dragStart()
-            body.on("mousemove",drag)
-        })
-
-        function drag(e){
-            e.preventDefault()
-            el.top(e.pageY - initialY)
-            el.left(e.pageX - initialX)
-            body.on("mouseup",mouseUp)
-            settings.onDrag()
-        }
-        function mouseUp(){
-            body.unbind("mouseup",mouseUp)
-            body.unbind("mousemove",drag)
-            settings.dragEnd()
-        }
-    })
-    return this
-}
-
 q.ready(function(){
+    //Non-Glaph, project specific:    
+    
+    q.d(".button-add-element").on("click",function(){
+        q.d(".menu-panel-displayed:not(.menu-panel-add)")
+            .removeClass("menu-panel-displayed")
+        
+        q.d(".menu-panel-add")
+            .toggleClass("menu-panel-displayed")
+    })
+    
+    //Glaph:
+
     app.glaph = q.d(".glaph")
     app.canvasElement = app.glaph.find("canvas").elements[0]
     app.canvas = app.canvasElement.getContext("2d")
     app.nodeWidth = q.d(".node").width()
     q.d(window).on("resize",setGlaphSize)
-    setGlaphSize()
+    setGlaphSize()     
     
     //Testing code
     var fromNode = q.d(".node:nth-child(1)")
@@ -69,7 +40,9 @@ q.ready(function(){
         var socket = q.d(this)
         var body = q.d("body")
         var isInput = socket.hasClass("node-input")              
-        var sses =  isInput?q.d(".node-input"):q.d(".node-output")    //Same Side Empty Sockets
+        var sses =  isInput?                //Same Side Empty Sockets
+                    q.d(".node-input"):
+                    q.d(".node-output")    
         
         if(!socket.hasClass("input-selected") &&
            !socket.hasClass("output-selected"))
@@ -95,6 +68,7 @@ q.ready(function(){
             body.unbind("mouseup",bodyMouseUp)
             sses.unbind("mouseup",ssesMouseUp)
             body.unbind("mousemove",drag)
+            socketLink(fromSocket,toSocket)
         }
         function bodyMouseUp(){
             unbindEvents()
@@ -115,8 +89,6 @@ q.ready(function(){
             socketLink(fromSocket,toSocket)
         }
     })
-    
-    socketLink(fromSocket,toSocket)
 })
 
 function socketLink(fromSocket,toSocket,altX,altY){

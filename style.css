@@ -10,7 +10,7 @@ html,body{
     position:absolute;
     top:0;
     left:0;
-    opacity:0.9;
+    opacity:0.99;
     z-index:2;
 }
 
@@ -20,4 +20,33 @@ html,body{
 
 .glaph{
     z-index:1;
+}
+
+.menubar .button{
+    display:inline-block;
+    padding:0 10px;
+    font-size:15px;   /*(/ (/ 50 2) 1.61)*/
+    line-height:50px;
+    margin-left:4px;
+    color:#777777;
+    font-family:sans-serif;
+}
+
+.menubar .button:hover{
+    background:#f5f5f5;
+}
+
+.menu-panel-add{
+    background:#fefefe;
+    position:absolute;
+    top:50px;
+    left:0;
+    display:none;
+    z-index:2;
+    width:200px;
+    height:322px;    /*(* 200 1.61)*/
+}
+
+.menu-panel-displayed{
+    display:block;
 }
