@@ -3,12 +3,19 @@ var app = {}
 q.ready(function(){
     //Non-Glaph, project specific:    
     
-    q.d(".button-add-element").on("click",function(){
-        q.d(".menu-panel-displayed:not(.menu-panel-add)")
+    q.d(".menubar .button").on("click",function(){
+        var id = q.d(this).attr("data-panel-id")
+        var panel =  q.d("#"+id)
+        var panelOpened = false
+
+        if(panel.hasClass("menu-panel-displayed"))
+            panelOpened = true
+        
+        q.d(".menu-panel-displayed")
             .removeClass("menu-panel-displayed")
         
-        q.d(".menu-panel-add")
-            .toggleClass("menu-panel-displayed")
+        if(!panelOpened)
+            panel.addClass("menu-panel-displayed")
     })
     
     //Glaph:
