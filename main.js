@@ -1,173 +1,373 @@
-var app = {}
+new_glaph(QSA(".big-glaph")[0]);
 
-q.ready(function(){
-    //Non-Glaph, project specific:    
+function new_glaph(container){
+    var root = {};
+    var node_types = base_node_types();
+    var sheet = new_sheet();
+    var dragging = null;
+    var canvas = null;
+    var ctx = null;
+    var w = 0;
+    var h = 0;
+    var last_clicked_output = null;
+    var greatest_node_id = 0;
     
-    q.d(".menubar .button").on("click",function(){
-        var id = q.d(this).attr("data-panel-id")
-        var panel =  q.d("#"+id)
-        var panelOpened = false
+    container.innerHTML = glaph_ui();
+    canvas = SQSA(container,"canvas")[0];
+    ctx = canvas.getContext("2d");
+    enable_global_drag();
+    init_add_menu();
+    init_panels_ui();
+    
+    var nodes = container
+        .querySelectorAll(".nodes")[0];
 
-        if(panel.hasClass("menu-panel-displayed"))
-            panelOpened = true
-        
-        q.d(".menu-panel-displayed")
-            .removeClass("menu-panel-displayed")
-        
-        if(!panelOpened)
-            panel.addClass("menu-panel-displayed")
-    })
-    
-    //Glaph:
+    add_node("addition");
 
-    app.glaph = q.d(".glaph")
-    app.canvasElement = app.glaph.find("canvas").elements[0]
-    app.canvas = app.canvasElement.getContext("2d")
-    app.nodeWidth = q.d(".node").width()
-    q.d(window).on("resize",setGlaphSize)
-    setGlaphSize()     
-    
-    //Testing code
-    var fromNode = q.d(".node:nth-child(1)")
-    var toNode = q.d(".node:nth-child(2)")
-    var fromSocket = fromNode.find(".node-output:nth-child(1)")
-    var toSocket = toNode.find(".node-input:nth-child(1)")
-    
-    fromNode.top(100).left(200)
-    toNode.top(120).left(500)
 
-    q.d(".node").dragDrop({handle:".node-header",
-                           onDrag:updateBoard})
+    resize();
+    window.addEventListener("resize",resize)
     
-    function updateBoard(){
-        socketLink(fromSocket,toSocket)
+    function resize(){
+        w = canvas.width = container.clientWidth;
+        h = canvas.height = container.clientHeight;
+        draw_links();
     }
     
-    q.d(".node-output, .node-input").on("mousedown",function(){
-        var socket = q.d(this)
-        var body = q.d("body")
-        var isInput = socket.hasClass("node-input")              
-        var sses =  isInput?                //Same Side Empty Sockets
-                    q.d(".node-input"):
-                    q.d(".node-output")    
-        
-        if(!socket.hasClass("input-selected") &&
-           !socket.hasClass("output-selected"))
-            return false
+    draw_links();
+    
+    function add_node(type){
+        var nt = node_types[type];
+        sheet.nodes.push(
+            deep_copy({
+                type: type,
+                top: 200,
+                left: 200,
+                inputs: empty_inputs(),
+                settings: nt.settings
+            })
+        );
 
-        socket.removeClass("input-selected")
-        socket.removeClass("output-selected")
-
-        body.on("mousemove",drag)
-        app.glaph.addClass("moving-link-"+(isInput?"input":"output"))
-
-        function drag(e){
-            e.preventDefault()
-            body.on("mouseup",bodyMouseUp)
-            sses.on("mouseup",ssesMouseUp)
-            
-            if(isInput)
-                socketLink(fromSocket,null,e.pageX,e.pageY)
-            else
-                socketLink(null,toSocket,e.pageX,e.pageY)
-        }
-        function unbindEvents(){
-            body.unbind("mouseup",bodyMouseUp)
-            sses.unbind("mouseup",ssesMouseUp)
-            body.unbind("mousemove",drag)
-            socketLink(fromSocket,toSocket)
-        }
-        function bodyMouseUp(){
-            unbindEvents()
-            app.glaph.removeClass("moving-link-input")
-                     .removeClass("moving-link-output")
-        }
-        function ssesMouseUp(e){
-            unbindEvents()
-            if(isInput){
-                toSocket = q.d(this)
-                q.d(this).addClass("input-selected")
+        function empty_inputs(){
+            var arr = Array(nt.inputs.length);
+            for(var i = 0; i < arr.length; i++){
+                arr[i] = [null,null];
             }
-            
-            else{
-                fromSocket = q.d(this)
-                q.d(this).addClass("output-selected")
-            }
-            socketLink(fromSocket,toSocket)
+            return arr;
         }
-    })
-})
+        
+        var id = sheet.nodes.length;
+        
+        node_types[type].create(nodes,id,function(node){
+            enable_drag(node);
+            create_input_and_outputs(nt,node);
+            node.setAttribute('data-node-id',
+                              greatest_node_id);
+            greatest_node_id++;
+        });
+    }
 
-function socketLink(fromSocket,toSocket,altX,altY){
-    // If fromSocket or toSocket is null, altX and altY 
-    // are used for positionning the corresponding end
-    // of the wire.
-    
-    var c = app.canvas
-    
-    //Testing code
-    clearCanvas()
-    
-    var fromNode,fromX,fromY
-    
-    var toNode,toX,toY
-    
-    if(fromSocket != null){
-        fromNode = fromSocket.parent(2)
-        fromX = fromSocket.left() + fromNode.left() + 15
-        fromY = fromNode.top()+fromSocket.top() + 7
-        fromSocket.addClass("output-selected")
+    function create_input_and_outputs(nt,node){
+        var html = get_html("node-output-ui");
+        var outputs = SQSA(node,".node-outputs")[0];
+        for(var i = 0; i < nt.outputs.length; i++){
+            var dom = create_dom("div",html);
+            outputs.appendChild(dom.children[0]);
+            
+            var output = outputs
+                .children[outputs.children.length -1];
+            
+            output.setAttribute("data-output-id",i);
+            output.onclick = node_output_click;
+        }
+        
+        var html = get_html("node-input-ui");
+
+        for(var i = 0; i < nt.inputs.length; i++){
+            var inputs = SQSA(node,".node-inputs")[0];
+            var dom = create_dom("div",html);
+            inputs.appendChild(dom.children[0]);
+            var input = inputs
+                .children[i];
+            input.setAttribute("data-input-id",i);
+            input.onclick = node_input_click;
+        }
     }
-    else{
-        fromX = altX
-        fromY = altY
+
+    function node_input_click(e){
+        if(last_clicked_output != null){
+            var l = last_clicked_output;
+            var output_id = l
+                .getAttribute("data-output-id");
+            var output_node_id = l.parentNode.parentNode
+                .getAttribute("data-node-id");
+            
+            var input_id = this
+                .getAttribute("data-input-id");
+            var input_node_id = this.parentNode.parentNode
+                .getAttribute("data-node-id");
+
+            add_link(
+                output_id,
+                output_node_id,
+                input_id,
+                input_node_id
+            )
+            last_clicked_output = null;
+        }
     }
-    if(toSocket != null){
-        toNode = toSocket.parent(2)
-        toX = toNode.left() - 7
-        toY = toNode.top()+toSocket.top() + 7
-        toSocket.addClass("input-selected")
-    }
-    else{
-        toX = altX
-        toY = altY
+
+    function add_link(fromOutput,fromNode,toInput,toNode){
+        sheet.nodes[toNode]
+            .inputs[toInput] = [fromNode,fromOutput];
+        draw_links();
     }
     
-    //Selected style
-    // c.strokeStyle = "#FFC322"
-    // c.lineWidth = 5
-    // drawLine(100,100,toX,toY+20)
+    function node_output_click(e){
+        last_clicked_output = this;
+    }
     
-    c.strokeStyle = "#FFFFFF"
-    c.lineWidth = 2
+    function glaph_ui(){
+        return get_html("glaph-ui");
+    }
+
+    function new_sheet(){
+        return {
+            nodes:[]
+        };
+    }
+
+    function init_add_menu(){
+        var menu = QSA(".menu-panel-add")[0];
+
+        for(var i in node_types){
+            var nt = node_types[i];
+            var dom = create_dom("action",i);
+            dom.attributes['data-name'] = i;
+            menu.appendChild(dom);
+            init_add_button(dom,i);
+        }
+
+        function init_add_button(dom,type){
+            dom.onclick = function(){
+                add_node(type);
+            };
+        }
+    }
     
-    drawLine(fromX,fromY,toX,toY)
+    function enable_drag(node){
+        var header = SQSA(node,".node-header")[0];
+        header.onmousedown = function(e){
+            dragging = node;
+            start_drag(e);
+        }
+    }
+    function start_drag(e){
+        root.initial_drag_pos = get_pos(e);
+        root.initial_drag_el_pos = get_el_pos(dragging);
+    }
+    function get_pos(e){
+        var x = e.clientX
+            - window.scrollX - container.clientLeft;
+        var y = e.clientY
+            - window.scrollY - container.clientTop;
+        return [x,y];
+    }
+    function get_pos_diff(p1,p2){
+        var dx = p2[0] - p1[0];
+        var dy = p2[1] - p1[1];
+        return [dx,dy];
+    }
+    function get_el_pos(el){
+        var x = el.offsetLeft;
+        var y = el.offsetTop;
+        return [x,y];
+    }
+    function set_el_pos(el,pos){
+        el.style.left = pos[0] + "px";
+        el.style.top = pos[1] + "px";
+    }
+    function enable_global_drag(){
+        var last_update = new Date().getTime();
+        
+        function mousemove(e){
+            var now = new Date().getTime();
+            if(now - last_update > 20){
+                if(dragging != null){
+                    var current_pos = get_pos(e);
+                    diff = get_pos_diff(
+                        root.initial_drag_pos,
+                        current_pos
+                    );
+                    diff[0] += root.initial_drag_el_pos[0];
+                    diff[1] += root.initial_drag_el_pos[1];
+                    set_el_pos(dragging,diff);
+                    last_update = now;
+                    draw_links();
+                }
+            }
+        }
+        function mouseup(){
+            dragging = null;
+        }
+        
+        window.addEventListener("mousemove",mousemove);
+        window.addEventListener("mouseup",mouseup);
+    }
+    function draw_links(){
+        ctx.clearRect(0,0,w,h);
+        var nodes = sheet.nodes;
+        for(var i = 0; i < nodes.length; i++){
+            var inputs = nodes[i].inputs;
+            for(var j = 0; j < inputs.length; j++){
+                var input = inputs[j];
+                if( input[0] != null
+                    && input[1] != null ){
+                    out_socket =
+                        get_output([input[0],input[1]]);
+                    in_socket =
+                        get_input([i,j]);
+                    
+                    draw_socket_link(out_socket,in_socket);
+                }
+            }
+        }
+    }
+    function get_input(arr){
+        var sel = ".node[data-node-id='"+
+            arr[0]+
+            "']";
+        sel += " .node-input[data-input-id='"+
+            arr[1]+
+            "']";
+        return QSA(
+            sel
+        )[0];
+    }
+    function get_output(arr){
+        var sel = ".node[data-node-id='"+
+            arr[0]+
+            "']";
+        sel += " .node-output[data-output-id='"+
+            arr[1]+
+            "']";
+        
+        return QSA(
+            sel
+        )[0];
+    }
+    function draw_socket_link(fromSocket,toSocket){
+        var x = socket_offset_left(fromSocket);
+        var y = socket_offset_top(fromSocket);
+        var toX = socket_offset_left(toSocket);
+        var toY = socket_offset_top(toSocket);
+        draw_line(x,y,toX,toY);
+    }
+
+    function socket_offset_left(socket){
+        return socket
+            .offsetLeft +
+            socket
+            .parentNode
+            .parentNode
+            .offsetLeft + 8;
+    }
+
+    function socket_offset_top(socket){
+        return socket.offsetTop +
+            socket
+            .parentNode
+            .parentNode
+            .offsetTop + 8;
+    }
+
+    
+    function draw_line(x,y,toX,toY){
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.lineWidth = 2;
+        ctx.fillStyle = "rgba(0,0,0,0)";
+        ctx.beginPath();
+        ctx.moveTo(x,y);
+        if(x < toX){
+            ctx.bezierCurveTo(
+                x+(toX-x)/2, y, 
+                toX-(toX-x)/2, toY, 
+                toX, toY
+            );
+        }
+        else{
+            ctx.bezierCurveTo(
+                    -(toX-x)+x, 1/4*(toY-y)+y, 
+                toX-(x-toX), 3/4*(toY-y)+y, 
+                toX, toY
+            );
+        }
+        ctx.stroke();
+        ctx.fill();
+        ctx.fillStyle = "rgba(0,0,0,1)";
+    }
 }
 
-function drawLine(x,y,toX,toY){
-    var c = app.canvas
-    c.fillStyle = "rgba(0,0,0,0)"
-    c.beginPath()
-    c.moveTo(x,y)
-    if(x < toX)
-        c.bezierCurveTo(x+(toX-x)/2,y,toX-(toX-x)/2,toY,toX,toY)
-    else
-        c.bezierCurveTo(-(toX-x)+x,1/4*(toY-y)+y,toX-(x-toX),3/4*(toY-y)+y,toX,toY)
-    c.stroke()
-    c.fill()
-    c.fillStyle = "rgba(0,0,0,1)";
+function base_node_types(){
+    return {
+        addition: {
+            inputs: ["element 1","element 2"],
+            outputs: ["output"],
+            content: get_html("add-node-ui"),
+            settings: {},
+            create: function(nodes,id,callback){
+                var html = get_html("node-ui");
+                var dom = create_dom("div",html);
+                var node = dom.children[0];
+                SQSA(node,".node-header")[0]
+                    .innerHTML = "Addition";
+                var content = SQSA(node,"content")[0];
+                content.innerHTML =
+                    get_html("add-node-ui");
+
+                nodes.appendChild(
+                    node
+                );
+                callback(node)
+            }
+        },
+        number: {
+            inputs: [],
+            outputs: ["number"],
+            content: get_html("number-node-ui"),
+            settings: {},
+            create: function(nodes,id,callback){
+                var html = get_html("node-ui");
+                var dom = create_dom("div",html);
+                var node = dom.children[0];
+                SQSA(node,".node-header")[0]
+                .innerHTML = "Number";
+                var content = SQSA(node,"content")[0];
+                content.innerHTML =
+                    get_html("add-node-ui");
+
+                nodes.appendChild(
+                    node
+                );
+                callback(node)
+            }
+        }
+    };
 }
 
-function clearCanvas(){
-    var c = app.canvas
-    c.fillStyle = "#aaa"
-    c.fillRect(0,0,app.width,app.height)
+run_tests();
+
+function run_tests(){
+    assert(
+        get_html("test").indexOf("<div></div>") != -1,
+        "Get html part"
+    );
+
+    assert(
+        create_dom("div","<p>POTATO</p>")
+            .querySelectorAll("p")[0]
+            .innerHTML == "POTATO",
+        "create dom"
+    );
 }
 
-function setGlaphSize(){
-    app.height = q.d(".glaph").height()
-    app.width = q.d(".glaph").width()
-    app.canvasElement.width = app.width
-    app.canvasElement.height = app.height
-    clearCanvas()
-}

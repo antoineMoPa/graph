@@ -3,22 +3,19 @@
 <head>
 	<meta charset="utf-8">
 	<title>Glaph</title>
-	<link rel="stylesheet" href="normalize.css">
+    <link rel="stylesheet" href="common-ui.css">
     <link rel="stylesheet" href="glaph.css">
     <link rel="stylesheet" href="style.css">
-	<script src="q.js"></script>
-	<script src="q.dragDrop.js"></script>
-	<script src="main.js"></script>
 </head>
 <body>
-    <div class="menubar">
-        <div class="button button-add-element no-select" data-panel-id="panel-add">
+    <div class="menubar no-select">
+        <div class="button button-add-element" data-panel-id="panel-add">
             ADD
         </div>
-        <div class="button button-board no-select" data-panel-id="panel-board">
+        <div class="button button-board" data-panel-id="panel-board">
             BOARD
         </div>
-        <div class="button button-help no-select" data-panel-id="panel-help">
+        <div class="button button-help" data-panel-id="panel-help">
             HELP
         </div>
     </div>
@@ -31,42 +28,42 @@
         <div class="menu-panel menu-panel-help" id="panel-help">
         </div>
     </div>
+    <div class="big-glaph" style="width:100%;height:100%;">
 
-	<div class="glaph">
-        <div class="nodes">
-            <div class="node">
-                <div class="node-header">
-                    Node 1 !
-                </div>
-	            <div class="node-inputs">
-	                <div class="node-input"></div>
-	                <div class="node-input"></div>
-                </div>
-                <div class="node-outputs">
-	                <div class="node-output"></div>
-	                <div class="node-output"></div>
-                </div>
-            </div>
-            <div class="node">
-                <div class="node-header">
-                    Node 2 !
-                </div>
-	            <div class="node-inputs">
-	                <div class="node-input"></div>
-	                <div class="node-input"></div>
-                </div>
-                <div class="node-outputs">
-	                <div class="node-output"></div>
-	                <div class="node-output"></div>
-                </div>
+    </div>
+    <script type="text/html" name="glaph-ui">
+        <div class="glaph">
+            <div class="nodes">
+                <canvas></canvas>
             </div>
         </div>
-	    <canvas></canvas>
-	</div>
-	
-	<script>
-	q.ready()
-	</script>
-	
+    </script>
+    <script type="text/html" name="node-ui">
+        <div style="top: 163px; left: 201px;" class="node">
+            <div class="node-header">
+            </div>
+            <div class="node-inputs">
+            </div>
+            <div class="node-outputs">
+            </div>
+            <content></content>
+        </div>
+    </script>
+    <script type="text/html" name="node-output-ui">
+        <div class="node-output"></div>
+    </script>
+    <script type="text/html" name="node-input-ui">
+        <div class="node-input"></div>
+    </script>
+    <script type="text/html" name="number-node-ui">
+        <input name="" type="text">
+    </script>
+    <script type="text/html" name="add-node-ui">
+    </script>
+    <script type="text/html" name="test">
+        <div></div>
+    </script>
+    <script src="common-ui.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>
