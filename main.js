@@ -22,8 +22,7 @@ function new_glaph(container){
     var nodes = container
         .querySelectorAll(".nodes")[0];
 
-    add_node("addition");
-
+    add_node("number");
 
     resize();
     window.addEventListener("resize",resize)
@@ -35,19 +34,50 @@ function new_glaph(container){
     }
     
     draw_links();
+
+    /**
+       To be called when adding a node / 
+       after nodes appear like at page reload
+       
+    */
+    function enable_fields(node,node_type,settings){
+        var nt = node_type;
+        for(var name in nt.settings){
+            set = nt.settings[name];
+            var type = set.type;
+            var html = get_html(type+"-input-ui");
+            var dom = create_dom("div",html);
+            // I feel like a javascript
+            // ninja right now
+            SQSA(dom,"label")[0].innerHTML = name;
+            SQSA(dom,"input")[0].setAttribute(
+                "data-name",
+                name
+            );
+            node.appendChild(dom);
+        }
+        initInputs(node,settings,some_value_has_changed);
+    }
+    
+    function some_value_has_changed(){
+        console.log("some value has changed")
+    }
     
     function add_node(type){
         var nt = node_types[type];
-        sheet.nodes.push(
+        var id = greatest_node_id;
+        greatest_node_id++;
+        
+        sheet.nodes[id] = 
             deep_copy({
                 type: type,
                 top: 200,
                 left: 200,
                 inputs: empty_inputs(),
-                settings: nt.settings
-            })
-        );
+                settings: empty_settings()
+            });
 
+        
         function empty_inputs(){
             var arr = Array(nt.inputs.length);
             for(var i = 0; i < arr.length; i++){
@@ -55,15 +85,26 @@ function new_glaph(container){
             }
             return arr;
         }
+
+        function empty_settings(){
+            var arr = {};
+            for(var i in nt.settings){
+                arr[i] = nt.settings[i].value;
+            }
+            return arr;
+        }
         
-        var id = sheet.nodes.length;
-        
-        node_types[type].create(nodes,id,function(node){
+        node_types[type].create(nodes, function(node){
             enable_drag(node);
-            create_input_and_outputs(nt,node);
-            node.setAttribute('data-node-id',
-                              greatest_node_id);
-            greatest_node_id++;
+            node.setAttribute('data-node-id', id);
+            create_input_and_outputs(nt, node);
+            
+            // create text inputs and stuff
+            enable_fields(
+                node,
+                nt,
+                sheet.nodes[id].settings
+            );
         });
     }
 
@@ -315,7 +356,7 @@ function base_node_types(){
             outputs: ["output"],
             content: get_html("add-node-ui"),
             settings: {},
-            create: function(nodes,id,callback){
+            create: function(nodes, callback){
                 var html = get_html("node-ui");
                 var dom = create_dom("div",html);
                 var node = dom.children[0];
@@ -335,8 +376,13 @@ function base_node_types(){
             inputs: [],
             outputs: ["number"],
             content: get_html("number-node-ui"),
-            settings: {},
-            create: function(nodes,id,callback){
+            settings: {
+                number:{
+                    type: "float",
+                    value: 0,
+                }
+            },
+            create: function(nodes, callback){
                 var html = get_html("node-ui");
                 var dom = create_dom("div",html);
                 var node = dom.children[0];

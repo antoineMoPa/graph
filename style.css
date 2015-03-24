@@ -67,3 +67,8 @@ html,body{
     display:block;
     margin:5px;
 }
+
+label{
+    margin-left:10px;
+    font-weight:600;
+}

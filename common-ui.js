@@ -1,8 +1,9 @@
+// querySelectorAll
 function QSA(sel){
     return document.querySelectorAll(sel);
 }
 
-// sub query selectorAll
+// sub querySelectorAll
 function SQSA(el, sel){
     return el.querySelectorAll(sel);
 }
@@ -116,4 +117,59 @@ function init_keyboard(){
         }
     }
 
+}
+
+
+function initInputs(parentNode, inputs, callback){
+    var callback = callback || function(){};
+    for(input in inputs){
+        var html_input = SQSA(
+            parentNode,
+            "input[data-name="+input+"]"
+        )[0];
+        enableInput(
+            html_input,
+            inputs,
+            input,
+            callback
+        );
+    }
+}
+
+function enableInput(html_input, data_array, index, callback){
+    var callback = callback || {};
+    var type = html_input.type;
+
+    if( type == "file"
+        && html_input.className.indexOf("image") != -1 ){
+        html_input.onchange = function(e){
+            var file = e.target.files[0];
+            var id = file.name + file.lastModified;
+            var reader = new FileReader();
+            data_array[index+"_id"] = id;
+            reader.onload = function(e){
+                store_image(id,e.target.result,callback);
+            };
+            reader.readAsDataURL(file);
+        }
+    } else {
+        html_input.value = data_array[index];
+        /* don't change frame on arrow down! */
+        html_input.onkeydown = function(e){
+            e.stopPropagation();
+        }
+
+        html_input.onkeyup =
+            html_input.onchange = function(){
+                oldvalue = this.value;
+                data_array[index] = this.value;
+                
+                callback(
+                    html_input,
+                    data_array,
+                    index,
+                    oldvalue
+                );
+            }
+    }
 }
