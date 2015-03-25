@@ -2,7 +2,7 @@ new_glaph(QSA(".big-glaph")[0]);
 
 function new_glaph(container){
     var root = {};
-    var node_types = base_node_types();
+    var node_types = number_node_types();
     var sheet = new_sheet();
     var dragging = null;
     var canvas = null;
@@ -11,7 +11,7 @@ function new_glaph(container){
     var h = 0;
     var last_clicked_output = null;
     var greatest_node_id = 0;
-    
+
     container.innerHTML = glaph_ui();
     canvas = SQSA(container,"canvas")[0];
     ctx = canvas.getContext("2d");
@@ -60,7 +60,7 @@ function new_glaph(container){
     }
     
     function some_value_has_changed(){
-        console.log("some value has changed")
+        node_types.run(sheet.nodes);
     }
     
     function add_node(type){
@@ -76,7 +76,6 @@ function new_glaph(container){
                 inputs: empty_inputs(),
                 settings: empty_settings()
             });
-
         
         function empty_inputs(){
             var arr = Array(nt.inputs.length);
@@ -85,16 +84,16 @@ function new_glaph(container){
             }
             return arr;
         }
-
+        
         function empty_settings(){
             var arr = {};
             for(var i in nt.settings){
                 arr[i] = nt.settings[i].value;
             }
             return arr;
-        }
+        }        
         
-        node_types[type].create(nodes, function(node){
+        create_node_dom(nodes, function(node){
             enable_drag(node);
             node.setAttribute('data-node-id', id);
             create_input_and_outputs(nt, node);
@@ -108,6 +107,21 @@ function new_glaph(container){
         });
     }
 
+    function create_node_dom(nodes, callback){
+        var html = get_html("node-ui");
+        var dom = create_dom("div",html);
+        var node = dom.children[0];
+        SQSA(node,".node-header")[0]
+            .innerHTML = "Addition";
+        var content = SQSA(node,"content")[0];
+        
+        nodes.appendChild(
+            node
+        );
+        callback(node)
+    }
+
+    
     function create_input_and_outputs(nt,node){
         var html = get_html("node-output-ui");
         var outputs = SQSA(node,".node-outputs")[0];
@@ -182,6 +196,9 @@ function new_glaph(container){
         var menu = QSA(".menu-panel-add")[0];
 
         for(var i in node_types){
+            if(i == "run"){
+                continue;
+            }
             var nt = node_types[i];
             var dom = create_dom("action",i);
             dom.attributes['data-name'] = i;
@@ -347,58 +364,6 @@ function new_glaph(container){
         ctx.fill();
         ctx.fillStyle = "rgba(0,0,0,1)";
     }
-}
-
-function base_node_types(){
-    return {
-        addition: {
-            inputs: ["element 1","element 2"],
-            outputs: ["output"],
-            content: get_html("add-node-ui"),
-            settings: {},
-            create: function(nodes, callback){
-                var html = get_html("node-ui");
-                var dom = create_dom("div",html);
-                var node = dom.children[0];
-                SQSA(node,".node-header")[0]
-                    .innerHTML = "Addition";
-                var content = SQSA(node,"content")[0];
-                content.innerHTML =
-                    get_html("add-node-ui");
-
-                nodes.appendChild(
-                    node
-                );
-                callback(node)
-            }
-        },
-        number: {
-            inputs: [],
-            outputs: ["number"],
-            content: get_html("number-node-ui"),
-            settings: {
-                number:{
-                    type: "float",
-                    value: 0,
-                }
-            },
-            create: function(nodes, callback){
-                var html = get_html("node-ui");
-                var dom = create_dom("div",html);
-                var node = dom.children[0];
-                SQSA(node,".node-header")[0]
-                .innerHTML = "Number";
-                var content = SQSA(node,"content")[0];
-                content.innerHTML =
-                    get_html("add-node-ui");
-
-                nodes.appendChild(
-                    node
-                );
-                callback(node)
-            }
-        }
-    };
 }
 
 run_tests();

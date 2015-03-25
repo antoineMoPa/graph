@@ -44,6 +44,12 @@ function deep_copy(obj){
 
 function get_html(name){
     var script = QSA("script[name='"+name+"']")[0];
+    if(script == undefined){
+        console.log(
+            "Error: script '"+name+"' does not exist."
+        );
+        return "";
+    }
     return script.innerHTML;
 }
 
