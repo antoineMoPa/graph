@@ -3,7 +3,7 @@ new_glaph(QSA(".big-glaph")[0]);
 function new_glaph(container){
     var root = {};
     var node_types = number_node_types();
-    var sheet = new_sheet();
+    var sheet = null;
     var dragging = null;
     var canvas = null;
     var ctx = null;
@@ -11,7 +11,7 @@ function new_glaph(container){
     var h = 0;
     var last_clicked_output = null;
     var greatest_node_id = 0;
-
+    
     container.innerHTML = glaph_ui();
     canvas = SQSA(container,"canvas")[0];
     ctx = canvas.getContext("2d");
@@ -22,19 +22,34 @@ function new_glaph(container){
     var nodes = container
         .querySelectorAll(".nodes")[0];
 
-    add_node("number");
-
-    resize();
-    window.addEventListener("resize",resize)
-    
     function resize(){
         w = canvas.width = container.clientWidth;
         h = canvas.height = container.clientHeight;
         draw_links();
     }
-    
+
+    var ls = window.localStorage.saved_node_sheet || "";
+    if(ls != ""){
+        sheet = JSON.parse(
+            ls
+        );
+        init_from_sheet();
+    } else {
+        sheet = new_sheet();
+        add_node("number");
+    }
+
+    resize();
+    window.addEventListener("resize",resize)
     draw_links();
 
+    function init_from_sheet(){
+        var nodes = sheet.nodes;
+        for(var i = 0; i < nodes.length; i++){
+            init_node_dom(nodes[i].type,i);
+        }
+    }
+    
     /**
        To be called when adding a node / 
        after nodes appear like at page reload
@@ -61,6 +76,12 @@ function new_glaph(container){
     
     function some_value_has_changed(){
         node_types.run(sheet.nodes);
+        save_to_localstorage();
+    }
+
+    function save_to_localstorage(){
+        window.localStorage.saved_node_sheet
+            = JSON.stringify(sheet);
     }
     
     function add_node(type){
@@ -92,8 +113,15 @@ function new_glaph(container){
             }
             return arr;
         }        
-        
+
+        save_to_localstorage();
+
+        init_node_dom(type,id)
+    }
+    
+    function init_node_dom(type,id){
         create_node_dom(nodes, type, function(node){
+            var nt = node_types[type];
             enable_drag(node);
             node.setAttribute('data-node-id', id);
             create_input_and_outputs(nt, node);
@@ -104,12 +132,17 @@ function new_glaph(container){
                 nt,
                 sheet.nodes[id].settings
             );
+
+            node.style.top = sheet.nodes[id].top + "px";
+            node.style.left = sheet.nodes[id].left + "px";
+            
             if(nt.oncreate != undefined){
                 nt.oncreate(node,id);
             }
         });
     }
 
+    
     function create_node_dom(nodes, type, callback){
         var html = get_html("node-ui");
         var dom = create_dom("div",html);
@@ -123,7 +156,6 @@ function new_glaph(container){
         );
         callback(node)
     }
-
     
     function create_input_and_outputs(nt,node){
         var html = get_html("node-output-ui");
@@ -269,6 +301,16 @@ function new_glaph(container){
             }
         }
         function mouseup(){
+            if(dragging != null){
+                var id = dragging
+                    .getAttribute("data-node-id");
+                sheet.nodes[id].top =
+                    parseInt(dragging.style.top);
+                sheet.nodes[id].left =
+                    parseInt(dragging.style.left);
+
+                save_to_localstorage();
+            }
             dragging = null;
         }
         

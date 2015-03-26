@@ -49,7 +49,7 @@ function number_node_types(){
             calculate: function(nodes,id){
                 var self = nodes[id];
                 self.result = [
-                    nodes[id].settings["number"]
+                    parseFloat(nodes[id].settings["number"])
                 ];
             }
         }
@@ -98,17 +98,13 @@ function number_node_types(){
         var outputs = [];
         return outputs;
     }
-
+    
     function get_input_result(nodes,id){
         var inputs = nodes[id].inputs;
         var result = [];
         for(var i = 0; i < inputs.length; i++){
             var outputNode = nodes[id].inputs[i][0];
             var outputId = nodes[id].inputs[i][1];
-
-            console.log(outputNode,outputId,nodes[outputNode]
-                .result)
-            
             result[i] =
                 nodes[outputNode]
                 .result[outputId];

@@ -13,7 +13,7 @@
 .node{
     background:#fff;
     width:200px;
-    min-height:200px;
+    min-height:95px;
     position:absolute;
     border-radius:4px;
     box-shadow:0 0 4px #777;
