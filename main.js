@@ -101,7 +101,7 @@ function new_glaph(container){
         function empty_inputs(){
             var arr = Array(nt.inputs.length);
             for(var i = 0; i < arr.length; i++){
-                arr[i] = [null,null];
+                arr[i] = [-1,-1];
             }
             return arr;
         }
@@ -197,6 +197,8 @@ function new_glaph(container){
             var input_node_id = this.parentNode.parentNode
                 .getAttribute("data-node-id");
 
+            l.style.background = "#ddd";
+            
             add_link(
                 output_id,
                 output_node_id,
@@ -204,6 +206,16 @@ function new_glaph(container){
                 input_node_id
             )
             last_clicked_output = null;
+        } else {
+            var input_id = this
+                .getAttribute("data-input-id");
+            var input_node_id = this.parentNode.parentNode
+                .getAttribute("data-node-id");
+            
+            remove_link(
+                input_id,
+                input_node_id
+            )
         }
     }
 
@@ -211,10 +223,20 @@ function new_glaph(container){
         sheet.nodes[toNode]
             .inputs[toInput] = [fromNode,fromOutput];
         draw_links();
+        some_value_has_changed();
     }
+
+    function remove_link(toInput,toNode){
+        sheet.nodes[toNode]
+            .inputs[toInput] = [-1,-1];
+        draw_links();
+        some_value_has_changed();
+    }
+
     
     function node_output_click(e){
         last_clicked_output = this;
+        this.style.background = "#fb3";
     }
     
     function glaph_ui(){
@@ -324,8 +346,8 @@ function new_glaph(container){
             var inputs = nodes[i].inputs;
             for(var j = 0; j < inputs.length; j++){
                 var input = inputs[j];
-                if( input[0] != null
-                    && input[1] != null ){
+                if( input[0] != -1
+                    && input[1] != -1 ){
                     out_socket =
                         get_output([input[0],input[1]]);
                     in_socket =

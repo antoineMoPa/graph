@@ -75,11 +75,13 @@ function number_node_types(){
         // Make sure parents results are found
         var inputs = nodes[id].inputs;
         for(var i = 0; i < inputs.length; i++){
-            if(nodes[inputs[i][0]].result == undefined){
-                climb_tree(
-                    nodes,
-                    inputs[i][0]
-                );
+            if(inputs[i][0] != -1){
+                if(nodes[inputs[i][0]].result == undefined){
+                    climb_tree(
+                        nodes,
+                        inputs[i][0]
+                    );
+                }
             }
         }
         // find result according to inputs
@@ -105,6 +107,10 @@ function number_node_types(){
         for(var i = 0; i < inputs.length; i++){
             var outputNode = nodes[id].inputs[i][0];
             var outputId = nodes[id].inputs[i][1];
+            if(outputNode == -1 || outputId == -1){
+                result[i] = undefined;
+                continue;
+            }
             result[i] =
                 nodes[outputNode]
                 .result[outputId];
