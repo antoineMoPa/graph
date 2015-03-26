@@ -93,7 +93,7 @@ function new_glaph(container){
             return arr;
         }        
         
-        create_node_dom(nodes, function(node){
+        create_node_dom(nodes, type, function(node){
             enable_drag(node);
             node.setAttribute('data-node-id', id);
             create_input_and_outputs(nt, node);
@@ -104,15 +104,18 @@ function new_glaph(container){
                 nt,
                 sheet.nodes[id].settings
             );
+            if(nt.oncreate != undefined){
+                nt.oncreate(node,id);
+            }
         });
     }
 
-    function create_node_dom(nodes, callback){
+    function create_node_dom(nodes, type, callback){
         var html = get_html("node-ui");
         var dom = create_dom("div",html);
         var node = dom.children[0];
         SQSA(node,".node-header")[0]
-            .innerHTML = "Addition";
+            .innerHTML = type;
         var content = SQSA(node,"content")[0];
         
         nodes.appendChild(
@@ -373,7 +376,6 @@ function run_tests(){
         get_html("test").indexOf("<div></div>") != -1,
         "Get html part"
     );
-
     assert(
         create_dom("div","<p>POTATO</p>")
             .querySelectorAll("p")[0]
