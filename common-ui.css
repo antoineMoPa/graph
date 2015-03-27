@@ -153,3 +153,12 @@ tab.active{
     position:absolute;
     left:-3700px;
 }
+label{
+    display:block;
+}
+select{
+    margin-left:10px;
+    margin-right:10px;
+    width:100%; /* remove this when calc is a standard */
+    width:calc(100% - 20px);
+}

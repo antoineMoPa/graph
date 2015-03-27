@@ -1,17 +1,42 @@
 function number_node_types(){
     var output_nodes = [];
-    
+
     var types = {
         run: number_run,
-        "addition": {
+        "operation": {
             inputs: ["element 1","element 2"],
             outputs: ["output"],
-            settings: {},
+            settings: {
+                operation:{
+                    type: "either",
+                    values: ["+","-","*","÷"],
+                    value: "+",
+                }
+            },
             calculate: function(nodes,id){
                 var self = nodes[id];
                 var inputs = get_input_result(nodes,id);
+                var settings = nodes[id].settings;
+                var a = inputs[0];
+                var b = inputs[1];
+                var res;
+                switch(settings.operation){
+                case "+":
+                    res = a + b;
+                    break;
+                case "-":
+                    res = a - b;
+                    break;
+                case "*":
+                    res = a * b;
+                    break;
+                case "÷":
+                default:
+                    res = a / b;
+                    break;
+                }
                 self.result = [];
-                self.result[0] = inputs[0] + inputs[1];
+                self.result[0] = res;
             }
         },
         "number output": {
@@ -54,40 +79,46 @@ function number_node_types(){
             }
         }
     };
-    
-    
+
+
     function number_run(nodes){
         // clear past results
         for(var i = 0; i < nodes.length; i++){
-            nodes[i].result = undefined;
+            if(nodes[i] != false){
+                nodes[i].result = undefined;
+            }
         }
-        
+
         for(var i = 0; i < output_nodes.length; i++){
-            climb_tree(nodes,output_nodes[i]);
+            if(nodes[i] != false){
+                if(!climb_tree(nodes,output_nodes[i])){
+                    break;
+                }
+            }
         }
     }
-    
+
     function climb_tree(nodes,id){
         // The result can already exist
         if(nodes[id].result != undefined){
-            return;
+            return true;
         }
         // Make sure parents results are found
         var inputs = nodes[id].inputs;
         for(var i = 0; i < inputs.length; i++){
             if(inputs[i][0] != -1){
                 if(nodes[inputs[i][0]].result == undefined){
-                    climb_tree(
-                        nodes,
-                        inputs[i][0]
-                    );
+                    if(!climb_tree(nodes,inputs[i][0])){
+                        return false;
+                    }
                 }
             }
         }
         // find result according to inputs
         calculate(nodes,id);
+        return true;
     }
-    
+
     function calculate(nodes,id){
         var nt = types[nodes[id].type];
         nt.calculate(nodes,id);
@@ -95,12 +126,12 @@ function number_node_types(){
             nt.onresult(nodes,id);
         }
     }
-    
+
     function node_run(node,inputs){
         var outputs = [];
         return outputs;
     }
-    
+
     function get_input_result(nodes,id){
         var inputs = nodes[id].inputs;
         var result = [];
@@ -117,10 +148,10 @@ function number_node_types(){
         }
         return result;
     }
-    
+
     function node_for_id(id){
         return QSA("[data-node-id='"+id+"']")[0];
     }
-    
+
     return types;
 }

@@ -75,13 +75,13 @@ function init_panels_ui(){
             if(has_class(panel,"menu-panel-displayed")){
                 panelOpened = true;
             }
-            
+
             var displayed = QSA(".menu-panel-displayed");
             for(var i = 0; i < displayed.length; i++){
                 var el = displayed[i];
                 remove_class(el,"menu-panel-displayed");
             }
-            
+
             if(!panelOpened){
                 add_class(panel,"menu-panel-displayed")
             }
@@ -92,11 +92,11 @@ function init_panels_ui(){
 function init_keyboard(){
     window.keyboard = {};
     keyboard.callbacks = [];
-    window.listened_keys = {};
+    window.keyboard.keys = {};
 
     window.listen_key = function(key){
-        if(!(key in listened_keys)){
-            listened_keys[key] = false;
+        if(!(key in keyboard.keys)){
+            keyboard.keys[key] = false;
         }
     };
 
@@ -114,11 +114,11 @@ function init_keyboard(){
 
     function set_current_key(e, value){
         str = String.fromCharCode(e.keyCode);
-        for(var key in listened_keys){
+        for(var key in keyboard.keys){
             if(e.keyCode == key){
-                listened_keys[key] = value;
+                keyboard.keys[key] = value;
             } else if (str == key){
-                listened_keys[key] = value;
+                keyboard.keys[key] = value;
             }
         }
     }
@@ -131,7 +131,8 @@ function initInputs(parentNode, inputs, callback){
     for(input in inputs){
         var html_input = SQSA(
             parentNode,
-            "input[data-name="+input+"]"
+            "input[data-name="+input+"],"+
+            "select[data-name="+input+"]"
         )[0];
         enableInput(
             html_input,
@@ -169,7 +170,7 @@ function enableInput(html_input, data_array, index, callback){
             html_input.onchange = function(){
                 oldvalue = this.value;
                 data_array[index] = this.value;
-                
+
                 callback(
                     html_input,
                     data_array,
