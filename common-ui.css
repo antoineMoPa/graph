@@ -161,4 +161,6 @@ select{
     margin-right:10px;
     width:100%; /* remove this when calc is a standard */
     width:calc(100% - 20px);
+    border:none;
+    background:#ddd;
 }

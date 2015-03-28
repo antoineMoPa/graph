@@ -9,7 +9,7 @@ function number_node_types(){
             settings: {
                 operation:{
                     type: "either",
-                    values: ["+","-","*","÷"],
+                    values: ["+","-","*","÷","exponent","modulo"],
                     value: "+",
                 }
             },
@@ -30,9 +30,76 @@ function number_node_types(){
                 case "*":
                     res = a * b;
                     break;
+                case "exponent":
+                    res = Math.pow(a,b);
+                    break;
+                case "modulo":
+                    res = a % b;
+                    break;
                 case "÷":
-                default:
                     res = a / b;
+                    break;
+                }
+                self.result = [];
+                self.result[0] = res;
+            }
+        },
+        "convert": {
+            inputs: ["element 1"],
+            outputs: ["output"],
+            settings: {
+                to:{
+                    type: "either",
+                    values: ["integer","float","string"],
+                    value: "integer",
+                }
+            },
+            calculate: function(nodes,id){
+                var self = nodes[id];
+                var inputs = get_input_result(nodes,id);
+                var settings = nodes[id].settings;
+                var a = inputs[0];
+                var res;
+                switch(settings.to){
+                case "integer":
+                    res = parseInt(a);
+                    break;
+                case "float":
+                    res = parseFloat(a);
+                    break;
+                case "string":
+                    res = a.toString();
+                    break;
+                }
+                self.result = [];
+                self.result[0] = res;
+            }
+        },
+        "trigonometry": {
+            inputs: ["element 1"],
+            outputs: ["output"],
+            settings: {
+                "function":{
+                    type: "either",
+                    values: ["sin","cos","tan"],
+                    value: "sin",
+                }
+            },
+            calculate: function(nodes,id){
+                var self = nodes[id];
+                var inputs = get_input_result(nodes,id);
+                var settings = nodes[id].settings;
+                var a = inputs[0];
+                var res;
+                switch(settings["function"]){
+                case "sin":
+                    res = Math.sin(a);
+                    break;
+                case "cos":
+                    res = Math.cos(a);
+                    break;
+                case "tan":
+                    res = Math.tan(a);
                     break;
                 }
                 self.result = [];
