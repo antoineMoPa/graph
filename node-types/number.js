@@ -3,6 +3,7 @@ function number_node_types(){
 
     var types = {
         run: number_run,
+        reset: number_reset,
         "operation": {
             inputs: ["element 1","element 2"],
             outputs: ["output"],
@@ -147,7 +148,10 @@ function number_node_types(){
         }
     };
 
-
+    function number_reset(nodes){
+        output_nodes = {};
+    }
+    
     function number_run(nodes){
         // clear past results
         for(var i = 0; i < nodes.length; i++){

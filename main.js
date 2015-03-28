@@ -17,6 +17,7 @@ function new_glaph(container){
     canvas = SQSA(container,"canvas")[0];
     ctx = canvas.getContext("2d");
     enable_global_drag();
+    init_board_menu();
     init_add_menu();
     init_panels_ui();
     init_keyboard();
@@ -83,7 +84,7 @@ function new_glaph(container){
                 "data-name",
                 name
             );
-
+            
             SQSA(node,"content")[0].appendChild(dom);
         }
         initInputs(node,settings,some_value_has_changed);
@@ -264,11 +265,31 @@ function new_glaph(container){
         };
     }
 
+    function init_board_menu(){
+        var menu = QSA(".menu-panel-board")[0];
+
+        var action = "clear everything";
+        var dom = create_dom("action",action);
+        dom.attributes['data-name'] = action;
+        menu.appendChild(dom);
+        init_button(dom,action);
+        
+        function init_button(dom,action){
+            dom.onclick = function(){
+                sheet.nodes = [];
+                nodes.innerHTML = "";
+                node_types.reset(sheet.nodes);
+                some_value_has_changed();
+                draw_links();
+            };
+        }
+    }
+    
     function init_add_menu(){
         var menu = QSA(".menu-panel-add")[0];
 
         for(var i in node_types){
-            if(i == "run"){
+            if(i == "run" || i == "reset"){
                 continue;
             }
             var nt = node_types[i];
