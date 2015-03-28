@@ -1,18 +1,27 @@
 new_glaph(QSA(".big-glaph")[0]);
-
+var root;
 function new_glaph(container){
-    var root = {};
-    var node_types = number_node_types();
-    var sheet = null;
-    var dragging = null;
+    var node_types;
+    var dragging;
     var canvas = null;
     var ctx = null;
     var w = 0;
     var h = 0;
     var last_clicked_output = null;
     // Empty available slots in nodes
-    var removed_ids = [];
+    var removed_ids;
 
+    init_globals();
+    
+    function init_globals(){
+        root = {};
+        node_types = number_node_types();
+        sheet = new_sheet();
+        removed_ids = [];
+        root.sheet = sheet;
+        dragging = null
+    }
+    
     container.innerHTML = glaph_ui();
     canvas = SQSA(container,"canvas")[0];
     ctx = canvas.getContext("2d");
@@ -276,9 +285,14 @@ function new_glaph(container){
         
         function init_button(dom,action){
             dom.onclick = function(){
-                sheet.nodes = [];
-                nodes.innerHTML = "";
-                node_types.reset(sheet.nodes);
+                init_globals();
+                var nodes = QSA(".node");
+                for(var i = 0; i < nodes.length;i++){
+                    if(nodes[i].tagName != "canvas"){
+                        nodes[i].parentNode
+                            .removeChild(nodes[i]);
+                    }
+                }
                 some_value_has_changed();
                 draw_links();
             };
@@ -289,7 +303,7 @@ function new_glaph(container){
         var menu = QSA(".menu-panel-add")[0];
 
         for(var i in node_types){
-            if(i == "run" || i == "reset"){
+            if(i == "run"){
                 continue;
             }
             var nt = node_types[i];
@@ -427,7 +441,8 @@ function new_glaph(container){
         ctx.clearRect(0,0,w,h);
         var nodes = sheet.nodes;
         for(var i = 0; i < nodes.length; i++){
-            if(nodes[i] == false){
+            if(nodes[i] === false){
+                console.log("continuing false");
                 continue;
             }
             var inputs = nodes[i].inputs;
@@ -439,7 +454,7 @@ function new_glaph(container){
                         get_output([input[0],input[1]]);
                     in_socket =
                         get_input([i,j]);
-
+                    
                     draw_socket_link(out_socket,in_socket);
                 }
             }

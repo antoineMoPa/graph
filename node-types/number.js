@@ -3,7 +3,6 @@ function number_node_types(){
 
     var types = {
         run: number_run,
-        reset: number_reset,
         "operation": {
             inputs: ["element 1","element 2"],
             outputs: ["output"],
@@ -15,6 +14,7 @@ function number_node_types(){
                 }
             },
             calculate: function(nodes,id){
+                console.log("calc");
                 var self = nodes[id];
                 var inputs = get_input_result(nodes,id);
                 var settings = nodes[id].settings;
@@ -148,10 +148,6 @@ function number_node_types(){
         }
     };
 
-    function number_reset(nodes){
-        output_nodes = {};
-    }
-    
     function number_run(nodes){
         // clear past results
         for(var i = 0; i < nodes.length; i++){
@@ -196,11 +192,6 @@ function number_node_types(){
         if(nt.onresult != undefined){
             nt.onresult(nodes,id);
         }
-    }
-
-    function node_run(node,inputs){
-        var outputs = [];
-        return outputs;
     }
 
     function get_input_result(nodes,id){
