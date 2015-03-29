@@ -71,7 +71,8 @@ tabtitle.active{
     color:#000;
     opacity:1;
 }
-action:active{
+action:active,
+action:hover{
     background:#18d;
 }
 tabtitles{

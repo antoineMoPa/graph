@@ -1,6 +1,7 @@
 new_glaph(QSA(".big-glaph")[0]);
-var root;
+
 function new_glaph(container){
+    var root;
     var node_types;
     var dragging;
     var canvas = null;

@@ -145,6 +145,79 @@ function number_node_types(){
                     parseFloat(nodes[id].settings["number"])
                 ];
             }
+        },
+        "condition": {
+            inputs: ["number 1","number 2"],
+            outputs: ["bool"],
+            settings: {
+                "condition":{
+                    type: "either",
+                    values: ["<",">","<=",">=","==","!="],
+                    value: "<",
+                }
+            },
+            calculate: function(nodes,id){
+                var self = nodes[id];
+                var inputs = get_input_result(nodes,id);
+                var settings = nodes[id].settings;
+                var a = inputs[0];
+                var b = inputs[1];
+                var res;
+                switch(settings["condition"]){
+                case "<":
+                    res = a < b;
+                    break;
+                case ">":
+                    res = a > b;
+                    break;
+                case "<=":
+                    res = a <= b;
+                    break;
+                case ">=":
+                    res = a >= b;
+                    break;
+                case "==":
+                    res = a == b;
+                    break;
+                case "!=":
+                    res = a != b;
+                    break;
+                }
+                self.result = [];
+                self.result[0] = res;
+            }
+        },
+        "logic": {
+            inputs: ["bool 1","bool 2"],
+            outputs: ["bool"],
+            settings: {
+                "operator":{
+                    type: "either",
+                    values: ["and","or","xor"],
+                    value: "and",
+                }
+            },
+            calculate: function(nodes,id){
+                var self = nodes[id];
+                var inputs = get_input_result(nodes,id);
+                var settings = nodes[id].settings;
+                var a = inputs[0];
+                var b = inputs[1];
+                var res;
+                switch(settings["operator"]){
+                case "and":
+                    res = a && b;
+                    break;
+                case "or":
+                    res = a || b;
+                    break;
+                case "xor":
+                    res = (a ? !b : b);
+                    break;
+                }
+                self.result = [];
+                self.result[0] = res;
+            }
         }
     };
 
