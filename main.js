@@ -1,7 +1,8 @@
 new_glaph(QSA(".big-glaph")[0]);
 
+var root;
+
 function new_glaph(container){
-    var root;
     var node_types;
     var dragging;
     var canvas = null;
@@ -11,7 +12,8 @@ function new_glaph(container){
     var last_clicked_output = null;
     // Empty available slots in nodes
     var removed_ids;
-
+    var max_z_index = 1;
+    
     init_globals();
     
     function init_globals(){
@@ -147,7 +149,7 @@ function new_glaph(container){
     function init_node_dom(type,id){
         create_node_dom(nodes, type, function(node){
             var nt = node_types[type];
-            enable_header_mouse_down(node);
+            enable_node_mouse_down(node);
             node.setAttribute('data-node-id', id);
             create_input_and_outputs(nt, node);
 
@@ -322,15 +324,19 @@ function new_glaph(container){
         }
     }
 
-    function enable_header_mouse_down(node){
+    function enable_node_mouse_down(node){
         var header = SQSA(node,".node-header")[0];
         window.listen_key("D");
+        node.onmousedown = function(e){
+            node.style.zIndex = max_z_index;
+            max_z_index++;
+        }
         header.onmousedown = function(e){
             if(keyboard.keys["D"]){
                 // delete node
                 var id = node
                     .getAttribute("data-node-id");
-
+                
                 remove_node(id);
             } else {
                 // start drag
@@ -443,7 +449,6 @@ function new_glaph(container){
         var nodes = sheet.nodes;
         for(var i = 0; i < nodes.length; i++){
             if(nodes[i] === false){
-                console.log("continuing false");
                 continue;
             }
             var inputs = nodes[i].inputs;

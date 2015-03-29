@@ -1,9 +1,9 @@
 function number_node_types(){
     var output_nodes = [];
-
+    
     var types = {
         run: number_run,
-        "operation": {
+        "basic operation": {
             inputs: ["element 1","element 2"],
             outputs: ["output"],
             settings: {
@@ -14,7 +14,6 @@ function number_node_types(){
                 }
             },
             calculate: function(nodes,id){
-                console.log("calc");
                 var self = nodes[id];
                 var inputs = get_input_result(nodes,id);
                 var settings = nodes[id].settings;
@@ -45,7 +44,7 @@ function number_node_types(){
                 self.result[0] = res;
             }
         },
-        "convert": {
+        "basic convert": {
             inputs: ["element 1"],
             outputs: ["output"],
             settings: {
@@ -76,7 +75,7 @@ function number_node_types(){
                 self.result[0] = res;
             }
         },
-        "trigonometry": {
+        "basic trigonometry": {
             inputs: ["element 1"],
             outputs: ["output"],
             settings: {
@@ -107,19 +106,19 @@ function number_node_types(){
                 self.result[0] = res;
             }
         },
-        "number output": {
+        "basic value output": {
             inputs: ["number"],
             outputs: [],
             settings: {},
             onresult: function(nodes,id){
                 var res = get_input_result(nodes,id);
                 var node = node_for_id(id);
-                var d = SQSA(node,".number-display")[0];
+                var d = SQSA(node,".value-display")[0];
                 d.innerHTML = res[0];
             },
             oncreate: function(node,id){
                 var p = create_dom("p","");
-                add_class(p,"number-display");
+                add_class(p,"value-display");
                 SQSA(node,"content")[0].appendChild(p);
                 output_nodes.push(id);
             },
@@ -130,7 +129,7 @@ function number_node_types(){
                 self.result = [res[0]];
             }
         },
-        "number": {
+        "basic number": {
             inputs: [],
             outputs: ["number"],
             settings: {
@@ -146,7 +145,7 @@ function number_node_types(){
                 ];
             }
         },
-        "condition": {
+        "basic condition": {
             inputs: ["number 1","number 2"],
             outputs: ["bool"],
             settings: {
@@ -187,7 +186,7 @@ function number_node_types(){
                 self.result[0] = res;
             }
         },
-        "logic": {
+        "basic logic": {
             inputs: ["bool 1","bool 2"],
             outputs: ["bool"],
             settings: {
