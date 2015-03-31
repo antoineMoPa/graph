@@ -1,8 +1,8 @@
-new_glaph(QSA(".big-glaph")[0]);
+new_graph(QSA(".big-graph")[0]);
 
 var root;
 
-function new_glaph(container){
+function new_graph(container){
     var node_systems;
     var dragging;
     var canvas = null;
@@ -31,7 +31,7 @@ function new_glaph(container){
         dragging = null
     }
     
-    container.innerHTML = glaph_ui();
+    container.innerHTML = graph_ui();
     canvas = SQSA(container,"canvas")[0];
     ctx = canvas.getContext("2d");
     enable_global_drag();
@@ -295,8 +295,8 @@ function new_glaph(container){
         this.style.background = "#fb3";
     }
 
-    function glaph_ui(){
-        return get_html("glaph-ui");
+    function graph_ui(){
+        return get_html("graph-ui");
     }
 
     function new_sheet(){

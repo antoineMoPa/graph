@@ -3,7 +3,7 @@ from http.server import *
 
 def run():
     server_class=HTTPServer
-    handler_class=Glaph_Server
+    handler_class=Graph_Server
     server_address = ('', 8000)
     httpd = server_class(server_address, handler_class)
     httpd.serve_forever()
@@ -12,7 +12,7 @@ def nice_str(string):
     return bytes(string, "utf-8")
 
     
-class Glaph_Server(BaseHTTPRequestHandler):    
+class Graph_Server(BaseHTTPRequestHandler):    
     def do_GET(self):
         self.send_response(200)
         self.send_header("Content-type", "text/plain")
