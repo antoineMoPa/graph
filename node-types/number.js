@@ -1,9 +1,12 @@
-function number_node_types(){
+function number_node_types(root){
+    var root = root;
     var output_nodes = [];
+    var updater_interval = null;
+    var updater_time_interval = 0;
     
     var types = {
-        run: number_run,
-        "basic operation": {
+        run: run,
+        "operation": {
             inputs: ["element 1","element 2"],
             outputs: ["output"],
             settings: {
@@ -44,7 +47,7 @@ function number_node_types(){
                 self.result[0] = res;
             }
         },
-        "basic convert": {
+        "convert": {
             inputs: ["element 1"],
             outputs: ["output"],
             settings: {
@@ -75,7 +78,7 @@ function number_node_types(){
                 self.result[0] = res;
             }
         },
-        "basic trigonometry": {
+        "trigonometry": {
             inputs: ["element 1"],
             outputs: ["output"],
             settings: {
@@ -106,7 +109,7 @@ function number_node_types(){
                 self.result[0] = res;
             }
         },
-        "basic value output": {
+        "value output": {
             inputs: ["number"],
             outputs: [],
             settings: {},
@@ -129,7 +132,7 @@ function number_node_types(){
                 self.result = [res[0]];
             }
         },
-        "basic number": {
+        "number": {
             inputs: [],
             outputs: ["number"],
             settings: {
@@ -145,7 +148,7 @@ function number_node_types(){
                 ];
             }
         },
-        "basic condition": {
+        "condition": {
             inputs: ["number 1","number 2"],
             outputs: ["bool"],
             settings: {
@@ -186,7 +189,7 @@ function number_node_types(){
                 self.result[0] = res;
             }
         },
-        "basic logic": {
+        "logic": {
             inputs: ["bool 1","bool 2"],
             outputs: ["bool"],
             settings: {
@@ -216,14 +219,90 @@ function number_node_types(){
                 }
                 self.result = [];
                 self.result[0] = res;
-            }
+            },
+            
+        },
+        "time": {
+            inputs: [],
+            outputs: ["unix timestamp"],
+            settings: {
+            },
+            calculate: function(nodes,id){
+                var self = nodes[id];
+                var res;
+                self.result = [];
+                self.result[0] = new Date().getTime();
+            },
+        },
+        "updater": {
+            inputs: ["time (ms)"],
+            info: "Causes app to recalculate everything "
+                + "at a certain frequency "
+                + "(Must be > 30 ms).",
+            outputs: [],
+            settings: {
+            },
+            oncreate: function(node,id){
+                output_nodes.push(id);
+            },
+            calculate: function(nodes,id){
+                var self = nodes[id];
+                var inputs = get_input_result(nodes,id);
+                if( updater_time_interval != inputs[0] ){
+                    updater_time_interval = inputs[0];
+                    if( updater_time_interval > 30 ){
+                        if(updater_interval != null){
+                            clearInterval(updater_interval);
+                            updater_interval = null;
+                        }
+                        updater_interval = setInterval(
+                            function(){
+                                run(nodes)
+                            },
+                            updater_time_interval
+                        );
+                    }
+                }
+            },
+        },
+        "position node": {
+            inputs: ["node id","x","y"],
+            info: "Places a node in this interface.<br>"
+            + "(Hack the user interface!)",
+            outputs: [],
+            settings: {
+            },
+            oncreate: function(node,id){
+                output_nodes.push(id);
+            },
+            calculate: function(nodes,id){
+                var self = nodes[id];
+                var inputs = get_input_result(nodes,id);
+                var n_id = parseInt(inputs[0]);
+                var x = inputs[1];
+                var y = inputs[2];
+                var nodes_dom = SQSA(root.cont,".node");
+                if( nodes_dom[n_id] != undefined
+                    && x != undefined
+                    && y != undefined
+                  ){
+                    nodes_dom[n_id].style.left =
+                        parseInt(x)+"px";
+                    nodes_dom[n_id].style.top =
+                        parseInt(y)+"px";
+                    
+                    root.draw_links();
+                }
+            },
         }
+
     };
 
-    function number_run(nodes){
+    function run(nodes){
         // clear past results
         for(var i = 0; i < nodes.length; i++){
-            if(nodes[i] != false){
+            if( nodes[i] != false
+                && nodes[i].system == "number" ){
                 nodes[i].result = undefined;
             }
         }

@@ -1,9 +1,19 @@
 var ajax = {};
 
-ajax.get = function(url){
-    return ajax.request({
+ajax.get = function(url,callback){
+    ajax.request({
         url: url,
-        method: "get"
+        method: "get",
+        complete: callback
+    });
+}
+
+ajax.post = function(url,data,callback){
+    ajax.request({
+        url: url,
+        method: "post",
+        data: data,
+        complete: callback
     });
 }
 
@@ -29,32 +39,15 @@ ajax.request = function(data){
     }
     
     xhr.onreadystatechange = function(){
-        if(xhr.readyState == 0){
-            if(typeof data.notInitialized === 'function'){
-                data.notInitialized(xhr);
-            }
-        }
-        if(xhr.readyState == 1){
-            if(typeof data.setUp === 'function'){
-                data.setUp(xhr);
-            }
-        }
-        if(xhr.readyState == 2){
-            if(typeof data.sent === 'function'){
-                data.sent(xhr);
-            }
-        }
-        if(xhr.readyState == 3){
-            if(typeof data.inProgress === 'function'){
-                data.inProgress(xhr);
-            }
-        }
         if(xhr.readyState == 4){
-            console.log(xhr.responseText)
             if(typeof data.complete === 'function'){
-                data.complete(xhr);
+                data.complete(xhr.response);
             }
         }
     }
-    xhr.send();
+    if(data.data != undefined){
+        xhr.send(data.data);
+    } else {
+        xhr.send();
+    }
 }

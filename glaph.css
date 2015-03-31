@@ -121,3 +121,7 @@ nodes{
 label{
     margin-bottom:5px;
 }
+.node content p{
+    font-size:13px;
+    margin:10px;
+}

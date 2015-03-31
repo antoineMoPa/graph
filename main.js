@@ -3,7 +3,7 @@ new_glaph(QSA(".big-glaph")[0]);
 var root;
 
 function new_glaph(container){
-    var node_types;
+    var node_systems;
     var dragging;
     var canvas = null;
     var ctx = null;
@@ -18,7 +18,13 @@ function new_glaph(container){
     
     function init_globals(){
         root = {};
-        node_types = number_node_types();
+        root.cont = container;
+        root.draw_links = draw_links;
+        node_systems = 
+            node_systems = {
+                number: number_node_types(root),
+                array: array_node_types(root)
+            }
         sheet = new_sheet();
         removed_ids = [];
         root.sheet = sheet;
@@ -49,7 +55,7 @@ function new_glaph(container){
         init_from_sheet();
     } else {
         sheet = new_sheet();
-        add_node("number");
+        add_node("number","number");
     }
 
     resize();
@@ -60,7 +66,11 @@ function new_glaph(container){
         var nodes = sheet.nodes;
         for(var i = 0; i < nodes.length; i++){
             if(nodes[i] != false){
-                init_node_dom(nodes[i].type,i);
+                init_node_dom(
+                    nodes[i].system,                    
+                    nodes[i].type,
+                    i
+                );
             }
         }
         some_value_has_changed();
@@ -80,7 +90,8 @@ function new_glaph(container){
             // I feel like a javascript
             // ninja right now
             SQSA(dom,"label")[0].innerHTML = name;
-            var input = SQSA(dom,"input, select")[0];
+            var input = SQSA(
+                dom,"input, select, textarea")[0];
 
             if(type == "either"){
                 for(var value in set.values){
@@ -103,8 +114,10 @@ function new_glaph(container){
     }
 
     function some_value_has_changed(){
-        node_types.run(sheet.nodes);
-        save_to_localstorage();
+        for(var system in node_systems){
+            node_systems[system].run(sheet.nodes);
+            save_to_localstorage();
+        }
     }
 
     function save_to_localstorage(){
@@ -112,19 +125,18 @@ function new_glaph(container){
             = JSON.stringify(sheet);
     }
 
-    function add_node(type){
-        var nt = node_types[type];
+    function add_node(system,type){
+        var nt = node_systems[system][type];
         var id = sheet.nodes.length;
-
         sheet.nodes[id] =
             deep_copy({
+                system: system,
                 type: type,
                 top: 200,
                 left: 200,
                 inputs: empty_inputs(),
                 settings: empty_settings()
             });
-
         function empty_inputs(){
             var arr = Array(nt.inputs.length);
             for(var i = 0; i < arr.length; i++){
@@ -143,12 +155,12 @@ function new_glaph(container){
 
         save_to_localstorage();
 
-        init_node_dom(type,id)
+        init_node_dom(system,type,id)
     }
 
-    function init_node_dom(type,id){
-        create_node_dom(nodes, type, function(node){
-            var nt = node_types[type];
+    function init_node_dom(system,type,id){
+        create_node_dom(nodes, system, type, function(node){
+            var nt = node_systems[system][type];
             enable_node_mouse_down(node);
             node.setAttribute('data-node-id', id);
             create_input_and_outputs(nt, node);
@@ -160,23 +172,37 @@ function new_glaph(container){
                 sheet.nodes[id].settings
             );
 
+            // add info
+
+            if(nt.info != undefined){
+                var p = create_dom("p",nt.info);
+                SQSA(node,"content")[0]
+                    .appendChild(p);
+            }
+            
             node.style.top = sheet.nodes[id].top + "px";
             node.style.left = sheet.nodes[id].left + "px";
-
+            bring_node_to_top(node);
+            
             if(nt.oncreate != undefined){
                 nt.oncreate(node,id);
             }
         });
     }
 
-    function create_node_dom(nodes, type, callback){
+    function bring_node_to_top(node){
+        node.style.zIndex = max_z_index;
+        max_z_index++;
+    }
+    
+    function create_node_dom(nodes, system, type, callback){
         var html = get_html("node-ui");
         var dom = create_dom("div",html);
         var node = dom.children[0];
         SQSA(node,".node-header")[0]
             .innerHTML = type;
         var content = SQSA(node,"content")[0];
-
+        
         nodes.appendChild(
             node
         );
@@ -193,6 +219,7 @@ function new_glaph(container){
             var output = outputs
                 .children[outputs.children.length -1];
 
+            output.title = nt.outputs[i];
             output.setAttribute("data-output-id",i);
             output.onclick = node_output_click;
         }
@@ -206,6 +233,7 @@ function new_glaph(container){
             var input = inputs
                 .children[i];
             input.setAttribute("data-input-id",i);
+            input.title = nt.inputs[i];
             input.onclick = node_input_click;
         }
     }
@@ -304,32 +332,37 @@ function new_glaph(container){
     
     function init_add_menu(){
         var menu = QSA(".menu-panel-add")[0];
-
-        for(var i in node_types){
-            if(i == "run"){
-                continue;
+        
+        for(var i in node_systems){
+            var node_types = node_systems[i];
+            for(var j in node_types){
+                if(j == "run"){
+                    continue;
+                }
+                var nt = node_types[j];
+                var dom = create_dom("action",j);
+                dom.attributes['data-name'] = j;
+                menu.appendChild(dom);
+                init_add_button(dom,i,j);
             }
-            var nt = node_types[i];
-            var dom = create_dom("action",i);
-            dom.attributes['data-name'] = i;
-            menu.appendChild(dom);
-            init_add_button(dom,i);
         }
-
-        function init_add_button(dom,type){
+        function init_add_button(dom,system,type){
             dom.onclick = function(){
-                remove_class(dom.parentNode,"menu-panel-displayed");
-                add_node(type);
+                remove_class(
+                    dom.parentNode,
+                    "menu-panel-displayed"
+                );
+                add_node(system,type);
             };
         }
+        
     }
 
     function enable_node_mouse_down(node){
         var header = SQSA(node,".node-header")[0];
         window.listen_key("D");
         node.onmousedown = function(e){
-            node.style.zIndex = max_z_index;
-            max_z_index++;
+            bring_node_to_top(node);
         }
         header.onmousedown = function(e){
             if(keyboard.keys["D"]){

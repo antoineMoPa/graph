@@ -165,3 +165,9 @@ select{
     border:none;
     background:#ddd;
 }
+textarea{
+    border:0;
+    background:#ddd;
+    max-width:100%;
+    resize:resize-y;
+}

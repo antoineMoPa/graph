@@ -132,7 +132,8 @@ function initInputs(parentNode, inputs, callback){
         var html_input = SQSA(
             parentNode,
             "input[data-name="+input+"],"+
-            "select[data-name="+input+"]"
+            "select[data-name="+input+"],"+
+            "textarea[data-name="+input+"]"
         )[0];
         enableInput(
             html_input,
