@@ -1,4 +1,4 @@
-# glaph
+# graph
 A node UI for the web inspired by the Blender node editor.
 
 # Features
