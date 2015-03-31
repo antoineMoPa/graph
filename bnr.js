@@ -13,8 +13,7 @@ function init_bnr(){
         var output_nodes = root.output_nodes;
         // clear past results
         for(var i = 0; i < nodes.length; i++){
-            if( nodes[i] != false
-                && nodes[i].system == "number" ){
+            if( nodes[i] != false ){
                 nodes[i].result = undefined;
             }
         }
