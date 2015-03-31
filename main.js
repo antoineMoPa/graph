@@ -330,12 +330,18 @@ function new_graph(container){
             };
         }
     }
-    
+
+    /**
+       Happy little panel
+    */
     function init_add_menu(){
         var menu = QSA(".menu-panel-add")[0];
         
         for(var i in node_systems){
             var node_types = node_systems[i];
+            var sub_panel = create_dom("subpanel","");
+            var title = create_dom("h3",i);
+            sub_panel.appendChild(title);
             for(var j in node_types){
                 if(j == "run"){
                     continue;
@@ -343,7 +349,7 @@ function new_graph(container){
                 var nt = node_types[j];
                 var dom = create_dom("action",j);
                 dom.attributes['data-name'] = j;
-                menu.appendChild(dom);
+                sub_panel.appendChild(dom);
                 init_add_button(dom,i,j);
 
                 // Add happy little font-awesome icons
@@ -351,6 +357,7 @@ function new_graph(container){
                     prepend_fa_icon(dom,nt.icon);
                 }
             }
+            menu.appendChild(sub_panel);
         }
         function init_add_button(dom,system,type){
             dom.onclick = function(){

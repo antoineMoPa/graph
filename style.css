@@ -56,6 +56,11 @@ html,body{
     left:0;
     display:none;
     z-index:2;
+}
+
+subpanel{
+    display:inline-block;
+    vertical-align:top;
     width:200px;
 }
 
@@ -71,4 +76,9 @@ html,body{
 label{
     margin-left:10px;
     font-weight:600;
+}
+
+subpanel h3{
+    font-weight:300;
+    text-transform:capitalize;
 }
