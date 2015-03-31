@@ -6,6 +6,50 @@ function number_node_types(root){
     
     var types = {
         run: run,
+        "number": {
+            inputs: [],
+            outputs: ["number"],
+            icon: "fa-calculator",
+            settings: {
+                number:{
+                    type: "float",
+                    value: 0,
+                }
+            },
+            oncreate: function(nodes,id){
+
+            },
+            calculate: function(nodes,id){
+                var self = nodes[id];
+                self.result = [
+                    parseFloat(nodes[id].settings["number"])
+                ];
+            }
+        },
+                "value output": {
+            inputs: ["number"],
+            outputs: [],
+            settings: {},
+            icon: "fa-desktop",
+            onresult: function(nodes,id){
+                var res = get_input_result(nodes,id);
+                var node = node_for_id(id);
+                var d = SQSA(node,".value-display")[0];
+                d.innerHTML = res[0];
+            },
+            oncreate: function(node,id){
+                var p = create_dom("p","");
+                add_class(p,"value-display");
+                SQSA(node,"content")[0].appendChild(p);
+                output_nodes.push(id);
+            },
+            calculate: function(nodes,id){
+                var self = nodes[id];
+                var res = get_input_result(nodes,id);
+                self.result = [];
+                self.result = [res[0]];
+            }
+        },
         "operation": {
             inputs: ["element 1","element 2"],
             outputs: ["output"],
@@ -110,50 +154,6 @@ function number_node_types(root){
                 }
                 self.result = [];
                 self.result[0] = res;
-            }
-        },
-        "value output": {
-            inputs: ["number"],
-            outputs: [],
-            settings: {},
-            icon: "fa-desktop",
-            onresult: function(nodes,id){
-                var res = get_input_result(nodes,id);
-                var node = node_for_id(id);
-                var d = SQSA(node,".value-display")[0];
-                d.innerHTML = res[0];
-            },
-            oncreate: function(node,id){
-                var p = create_dom("p","");
-                add_class(p,"value-display");
-                SQSA(node,"content")[0].appendChild(p);
-                output_nodes.push(id);
-            },
-            calculate: function(nodes,id){
-                var self = nodes[id];
-                var res = get_input_result(nodes,id);
-                self.result = [];
-                self.result = [res[0]];
-            }
-        },
-        "number": {
-            inputs: [],
-            outputs: ["number"],
-            icon: "fa-calculator",
-            settings: {
-                number:{
-                    type: "float",
-                    value: 0,
-                }
-            },
-            oncreate: function(nodes,id){
-
-            },
-            calculate: function(nodes,id){
-                var self = nodes[id];
-                self.result = [
-                    parseFloat(nodes[id].settings["number"])
-                ];
             }
         },
         "condition": {
