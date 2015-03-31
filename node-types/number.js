@@ -9,6 +9,7 @@ function number_node_types(root){
         "operation": {
             inputs: ["element 1","element 2"],
             outputs: ["output"],
+            icon: "fa-calculator",
             settings: {
                 operation:{
                     type: "either",
@@ -50,6 +51,7 @@ function number_node_types(root){
         "convert": {
             inputs: ["element 1"],
             outputs: ["output"],
+            icon: "fa-exchange",
             settings: {
                 to:{
                     type: "either",
@@ -81,6 +83,7 @@ function number_node_types(root){
         "trigonometry": {
             inputs: ["element 1"],
             outputs: ["output"],
+            icon: "fa-play",
             settings: {
                 "function":{
                     type: "either",
@@ -113,6 +116,7 @@ function number_node_types(root){
             inputs: ["number"],
             outputs: [],
             settings: {},
+            icon: "fa-desktop",
             onresult: function(nodes,id){
                 var res = get_input_result(nodes,id);
                 var node = node_for_id(id);
@@ -135,6 +139,7 @@ function number_node_types(root){
         "number": {
             inputs: [],
             outputs: ["number"],
+            icon: "fa-calculator",
             settings: {
                 number:{
                     type: "float",
@@ -154,6 +159,7 @@ function number_node_types(root){
         "condition": {
             inputs: ["number 1","number 2"],
             outputs: ["bool"],
+            icon: "fa-question-circle",
             settings: {
                 "condition":{
                     type: "either",
@@ -195,6 +201,7 @@ function number_node_types(root){
         "logic": {
             inputs: ["bool 1","bool 2"],
             outputs: ["bool"],
+            icon: "fa-adjust",
             settings: {
                 "operator":{
                     type: "either",
@@ -228,6 +235,7 @@ function number_node_types(root){
         "time": {
             inputs: [],
             outputs: ["unix timestamp"],
+            icon: "fa-clock-o",
             settings: {
             },
             calculate: function(nodes,id){
@@ -242,6 +250,7 @@ function number_node_types(root){
             info: "Causes app to recalculate everything "
                 + "at a certain frequency "
                 + "(Must be > 30 ms).",
+            icon: "fa-refresh",
             outputs: [],
             settings: {
             },
@@ -271,7 +280,8 @@ function number_node_types(root){
         "position node": {
             inputs: ["node id (number)","x","y"],
             info: "Places a node in this interface.<br>"
-            + "(Hack the user interface!)",
+                + "(Hack the user interface!)",
+            icon: "fa-arrows",
             outputs: [],
             settings: {
             },

@@ -1,13 +1,33 @@
-// querySelectorAll
+/* 
+   I decided not to use jQuery 
+   So I wrote happy little shortcuts 
+   to some longer "pure js™" functions
+*/
+
+/**
+   Returns elements matching selector
+*/
 function QSA(sel){
     return document.querySelectorAll(sel);
 }
 
-// sub querySelectorAll
+/**
+   Returns elements matching selector withing parent
+*/
 function SQSA(el, sel){
     return el.querySelectorAll(sel);
 }
 
+/**
+   Adds element as the first child of parent
+*/
+function prepend(parent,el){
+    parent.insertBefore(el,parent.firstChild);
+}
+
+/**
+   getElementById, but shorter
+*/
 function ID(id){
     return document.getElementById(id);
 }

@@ -6,6 +6,7 @@ function array_node_types(){
         "array": {
             inputs: [],
             outputs: ["array"],
+            icon: "fa-table",
             settings: {
                 "operator":{
                     type: "text",

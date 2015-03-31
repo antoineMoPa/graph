@@ -313,6 +313,7 @@ function new_graph(container){
         dom.attributes['data-name'] = action;
         menu.appendChild(dom);
         init_button(dom,action);
+        prepend_fa_icon(dom,"fa-trash-o");
         
         function init_button(dom,action){
             dom.onclick = function(){
@@ -344,6 +345,11 @@ function new_graph(container){
                 dom.attributes['data-name'] = j;
                 menu.appendChild(dom);
                 init_add_button(dom,i,j);
+
+                // Add happy little font-awesome icons
+                if(nt.icon != undefined){
+                    prepend_fa_icon(dom,nt.icon);
+                }
             }
         }
         function init_add_button(dom,system,type){
@@ -358,6 +364,13 @@ function new_graph(container){
         
     }
 
+    function prepend_fa_icon(element,icon){
+        var i_dom = create_dom("i","");
+        add_class(i_dom, "fa");
+        add_class(i_dom, icon);
+        prepend(element,i_dom);
+    }
+    
     function enable_node_mouse_down(node){
         var header = SQSA(node,".node-header")[0];
         window.listen_key("D");
