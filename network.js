@@ -8,6 +8,17 @@ ajax.get = function(url,callback){
     });
 }
 
+/*
+  ex:
+  ajax.post(
+      "http://127.0.0.1:8000",
+      {dude:3},
+      function(response){
+          console.log(response);
+      }
+  );
+
+*/
 ajax.post = function(url,data,callback){
     ajax.request({
         url: url,

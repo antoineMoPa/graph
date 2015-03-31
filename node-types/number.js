@@ -1,11 +1,9 @@
 function number_node_types(root){
     var root = root;
-    var output_nodes = [];
     var updater_interval = null;
     var updater_time_interval = 0;
-
+    
     var types = {
-        run: run,
         "number": {
             inputs: [],
             outputs: ["number"],
@@ -29,8 +27,8 @@ function number_node_types(root){
             settings: {},
             icon: "fa-desktop",
             onresult: function(nodes,id){
-                var res = get_input_result(nodes,id);
-                var node = node_for_id(id);
+                var res = root.get_input_result(nodes,id);
+                var node = root.node_for_id(id);
                 var d = SQSA(node,".value-display")[0];
                 d.innerHTML = res[0];
             },
@@ -38,11 +36,11 @@ function number_node_types(root){
                 var p = create_dom("p","");
                 add_class(p,"value-display");
                 SQSA(node,"content")[0].appendChild(p);
-                output_nodes.push(id);
+                root.output_nodes.push(id);
             },
             calculate: function(nodes,id){
                 var self = nodes[id];
-                var res = get_input_result(nodes,id);
+                var res = root.get_input_result(nodes,id);
                 self.result = [res[0]];
             }
         },
@@ -59,7 +57,7 @@ function number_node_types(root){
             },
             calculate: function(nodes,id){
                 var self = nodes[id];
-                var inputs = get_input_result(nodes,id);
+                var inputs = root.get_input_result(nodes,id);
                 var settings = nodes[id].settings;
                 var a = inputs[0];
                 var b = inputs[1];
@@ -92,6 +90,8 @@ function number_node_types(root){
             inputs: ["element 1"],
             outputs: ["output"],
             icon: "fa-exchange",
+            title_info:
+            "int to float, number to string, etc.",
             settings: {
                 to:{
                     type: "either",
@@ -101,7 +101,7 @@ function number_node_types(root){
             },
             calculate: function(nodes,id){
                 var self = nodes[id];
-                var inputs = get_input_result(nodes,id);
+                var inputs = root.get_input_result(nodes,id);
                 var settings = nodes[id].settings;
                 var a = inputs[0];
                 var res;
@@ -124,6 +124,7 @@ function number_node_types(root){
             inputs: ["element 1"],
             outputs: ["output"],
             icon: "fa-play",
+            title_info: "Sin, Cos, Tan",
             settings: {
                 "function":{
                     type: "either",
@@ -133,7 +134,7 @@ function number_node_types(root){
             },
             calculate: function(nodes,id){
                 var self = nodes[id];
-                var inputs = get_input_result(nodes,id);
+                var inputs = root.get_input_result(nodes,id);
                 var settings = nodes[id].settings;
                 var a = inputs[0];
                 var res;
@@ -165,7 +166,7 @@ function number_node_types(root){
             },
             calculate: function(nodes,id){
                 var self = nodes[id];
-                var inputs = get_input_result(nodes,id);
+                var inputs = root.get_input_result(nodes,id);
                 var settings = nodes[id].settings;
                 var a = inputs[0];
                 var b = inputs[1];
@@ -207,7 +208,7 @@ function number_node_types(root){
             },
             calculate: function(nodes,id){
                 var self = nodes[id];
-                var inputs = get_input_result(nodes,id);
+                var inputs = root.get_input_result(nodes,id);
                 var settings = nodes[id].settings;
                 var a = inputs[0];
                 var b = inputs[1];
@@ -252,11 +253,11 @@ function number_node_types(root){
             settings: {
             },
             oncreate: function(node,id){
-                output_nodes.push(id);
+                root.output_nodes.push(id);
             },
             calculate: function(nodes,id){
                 var self = nodes[id];
-                var inputs = get_input_result(nodes,id);
+                var inputs = root.get_input_result(nodes,id);
                 if( updater_time_interval != inputs[0] ){
                     updater_time_interval = inputs[0];
                     if( updater_time_interval > 30 ){
@@ -283,15 +284,15 @@ function number_node_types(root){
             settings: {
             },
             oncreate: function(node,id){
-                output_nodes.push(id);
+                root.output_nodes.push(id);
             },
             calculate: function(nodes,id){
                 var self = nodes[id];
-                var inputs = get_input_result(nodes,id);
+                var inputs = root.get_input_result(nodes,id);
                 var n_id = parseInt(inputs[0]);
                 var x = inputs[1];
                 var y = inputs[2];
-                var node_dom = node_for_id(n_id);
+                var node_dom = root.node_for_id(n_id);
                 if( node_dom != undefined
                     && x != undefined
                     && y != undefined
@@ -322,74 +323,8 @@ function number_node_types(root){
             },
         }
     };
-
-    function run(nodes){
-        // clear past results
-        for(var i = 0; i < nodes.length; i++){
-            if( nodes[i] != false
-                && nodes[i].system == "number" ){
-                nodes[i].result = undefined;
-            }
-        }
-
-        for(var i = 0; i < output_nodes.length; i++){
-            if(nodes[output_nodes[i]] !== false){
-                if(!climb_tree(nodes,output_nodes[i])){
-                    break;
-                }
-            }
-        }
-    }
-
-    function climb_tree(nodes,id){
-        // The result can already exist
-        if(nodes[id].result != undefined){
-            return true;
-        }
-        // Make sure parents results are found
-        var inputs = nodes[id].inputs;
-        for(var i = 0; i < inputs.length; i++){
-            if(inputs[i][0] != -1){
-                if(nodes[inputs[i][0]].result == undefined){
-                    if(!climb_tree(nodes,inputs[i][0])){
-                        return false;
-                    }
-                }
-            }
-        }
-        // find result according to inputs
-        calculate(nodes,id);
-        return true;
-    }
-
-    function calculate(nodes,id){
-        var nt = types[nodes[id].type];
-        nt.calculate(nodes,id);
-        if(nt.onresult != undefined){
-            nt.onresult(nodes,id);
-        }
-    }
-
-    function get_input_result(nodes,id){
-        var inputs = nodes[id].inputs;
-        var result = [];
-        for(var i = 0; i < inputs.length; i++){
-            var outputNode = nodes[id].inputs[i][0];
-            var outputId = nodes[id].inputs[i][1];
-            if(outputNode == -1 || outputId == -1){
-                result[i] = undefined;
-                continue;
-            }
-            result[i] =
-                nodes[outputNode]
-                .result[outputId];
-        }
-        return result;
-    }
-
-    function node_for_id(id){
-        return SQSA(root.cont,"[data-node-id='"+id+"']")[0];
-    }
-
+    
     return types;
 }
+
+

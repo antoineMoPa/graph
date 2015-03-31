@@ -20,15 +20,17 @@ function new_graph(container){
         root = {};
         root.cont = container;
         root.draw_links = draw_links;
-        node_systems = 
+        root.output_nodes = [];
+        root.node_systems = 
             node_systems = {
                 number: number_node_types(root),
                 array: array_node_types(root)
             }
+        init_bnr(root);
         sheet = new_sheet();
         removed_ids = [];
         root.sheet = sheet;
-        dragging = null
+        dragging = null;
     }
     
     container.innerHTML = graph_ui();
@@ -114,10 +116,8 @@ function new_graph(container){
     }
 
     function some_value_has_changed(){
-        for(var system in node_systems){
-            node_systems[system].run(sheet.nodes);
-            save_to_localstorage();
-        }
+        root.bnr.run(sheet.nodes);
+        save_to_localstorage();
     }
 
     function save_to_localstorage(){
@@ -348,7 +348,10 @@ function new_graph(container){
                 }
                 var nt = node_types[j];
                 var dom = create_dom("action",j);
-                dom.attributes['data-name'] = j;
+                dom.setAttribute('data-name',j);
+                if(nt.title_info != undefined){
+                    dom.setAttribute('title',nt.title_info);
+                }
                 sub_panel.appendChild(dom);
                 init_add_button(dom,i,j);
 
@@ -602,7 +605,6 @@ function new_graph(container){
         ctx.fill();
         ctx.fillStyle = "rgba(0,0,0,1)";
     }
-
 }
 
 run_tests();
