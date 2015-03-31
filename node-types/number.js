@@ -267,7 +267,7 @@ function number_node_types(root){
                         }
                         updater_interval = setInterval(
                             function(){
-                                run(nodes)
+                                root.bnr.run(nodes)
                             },
                             updater_time_interval
                         );
