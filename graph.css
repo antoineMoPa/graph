@@ -116,6 +116,7 @@ content{
     font-size:10px;
     color:#000;
     cursor:pointer;
+    background:linear-gradient(#fff,#ddd);
 }
 
 .node-header{
