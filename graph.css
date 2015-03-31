@@ -194,11 +194,18 @@ label{
     margin-bottom:5px;
 }
 
-.node content p{
+.node content p,
+.node happyerror{
     font-size:13px;
     margin:10px;
+}
+
+happyerror{
+    display:block;
+    color:#f53;
 }
 
 .menu-panels .fa{
     margin-right:5px;
 }
+

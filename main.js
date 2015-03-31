@@ -21,6 +21,7 @@ function new_graph(container){
         root.cont = container;
         root.draw_links = draw_links;
         root.output_nodes = [];
+        root.happy_accident = happy_accident;
         root.node_systems = 
             node_systems = {
                 number: number_node_types(root),
@@ -116,6 +117,7 @@ function new_graph(container){
     }
 
     function some_value_has_changed(){
+        clear_happy_errors();
         root.bnr.run(sheet.nodes);
         save_to_localstorage();
     }
@@ -604,6 +606,27 @@ function new_graph(container){
         ctx.stroke();
         ctx.fill();
         ctx.fillStyle = "rgba(0,0,0,1)";
+    }
+
+    /**
+       There are no mistakes, only
+       happy little accidents!
+       
+       Sends a message to the user in the node
+       
+       Gets cleared at every run
+    */
+    function happy_accident(node_id, message){
+        var dom = create_dom("happyerror",message);
+        root.node_for_id(node_id).appendChild(dom);
+    }
+
+    function clear_happy_errors(){
+        var errs = QSA("happyerror");
+        for(var i = 0; i < errs.length; i++){
+            var el = errs[i];
+            el.parentNode.removeChild(el);
+        }
     }
 }
 

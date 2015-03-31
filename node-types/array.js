@@ -20,7 +20,11 @@ function array_node_types(root){
             calculate: function(nodes,id){
                 var self = nodes[id];
                 var settings = nodes[id].settings;
-                var arr = JSON.parse(settings.array);
+                try{
+                    var arr = JSON.parse(settings.array);
+                } catch (e){
+                    var arr = [];
+                }
                 self.result = [arr];
             }
         },
@@ -48,11 +52,19 @@ function array_node_types(root){
                 function array_operation(a,b,op){
                     var res = [];
                     if( Array.isArray(a)
-                        && Array.isArray(b)
-                        && a.length == b.length ){
-                        res = a.map(function(v,i,arr){
-                            return op(v,b[i]);
-                        });
+                        && Array.isArray(b) ){
+                        if(a.length == b.length){
+                            res = a.map(function(v,i,arr){
+                                return op(v,b[i]);
+                            });
+                        } else {
+                            root.happy_accident(
+                                id,
+                                "The arrays do not " +
+                                    " have the same size"
+                            );
+                            res = [];
+                        }
                     } else if(Array.isArray(a)) {
                         res = a.map(function(v,i,arr){
                             return op(v,b);
