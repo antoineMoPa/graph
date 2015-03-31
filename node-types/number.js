@@ -141,6 +141,9 @@ function number_node_types(root){
                     value: 0,
                 }
             },
+            oncreate: function(nodes,id){
+
+            },
             calculate: function(nodes,id){
                 var self = nodes[id];
                 self.result = [
@@ -266,7 +269,7 @@ function number_node_types(root){
             },
         },
         "position node": {
-            inputs: ["node id","x","y"],
+            inputs: ["node id (number)","x","y"],
             info: "Places a node in this interface.<br>"
             + "(Hack the user interface!)",
             outputs: [],
@@ -281,14 +284,14 @@ function number_node_types(root){
                 var n_id = parseInt(inputs[0]);
                 var x = inputs[1];
                 var y = inputs[2];
-                var nodes_dom = SQSA(root.cont,".node");
-                if( nodes_dom[n_id] != undefined
+                var node_dom = node_for_id(n_id);
+                if( node_dom != undefined
                     && x != undefined
                     && y != undefined
                   ){
-                    nodes_dom[n_id].style.left =
+                    node_dom.style.left =
                         parseInt(x)+"px";
-                    nodes_dom[n_id].style.top =
+                    node_dom.style.top =
                         parseInt(y)+"px";
                     
                     root.draw_links();
@@ -361,9 +364,9 @@ function number_node_types(root){
         }
         return result;
     }
-
+    
     function node_for_id(id){
-        return QSA("[data-node-id='"+id+"']")[0];
+        return SQSA(root.cont,"[data-node-id='"+id+"']")[0];
     }
 
     return types;
