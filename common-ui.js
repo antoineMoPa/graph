@@ -96,16 +96,20 @@ function init_panels_ui(){
                 panelOpened = true;
             }
 
-            var displayed = QSA(".menu-panel-displayed");
-            for(var i = 0; i < displayed.length; i++){
-                var el = displayed[i];
-                remove_class(el,"menu-panel-displayed");
-            }
-
+            close_menu_panels();
+            
             if(!panelOpened){
                 add_class(panel,"menu-panel-displayed")
             }
         }
+    }
+}
+
+function close_menu_panels(){
+    var displayed = QSA(".menu-panel-displayed");
+    for(var i = 0; i < displayed.length; i++){
+        var el = displayed[i];
+        remove_class(el,"menu-panel-displayed");
     }
 }
 

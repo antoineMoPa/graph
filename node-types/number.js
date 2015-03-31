@@ -3,7 +3,7 @@ function number_node_types(root){
     var output_nodes = [];
     var updater_interval = null;
     var updater_time_interval = 0;
-    
+
     var types = {
         run: run,
         "number": {
@@ -16,9 +16,6 @@ function number_node_types(root){
                     value: 0,
                 }
             },
-            oncreate: function(nodes,id){
-
-            },
             calculate: function(nodes,id){
                 var self = nodes[id];
                 self.result = [
@@ -26,7 +23,7 @@ function number_node_types(root){
                 ];
             }
         },
-                "value output": {
+        "value output": {
             inputs: ["number"],
             outputs: [],
             settings: {},
@@ -46,7 +43,6 @@ function number_node_types(root){
             calculate: function(nodes,id){
                 var self = nodes[id];
                 var res = get_input_result(nodes,id);
-                self.result = [];
                 self.result = [res[0]];
             }
         },
@@ -230,11 +226,12 @@ function number_node_types(root){
                 self.result = [];
                 self.result[0] = res;
             },
-            
+
         },
         "time": {
             inputs: [],
             outputs: ["unix timestamp"],
+            info: "Unix timestamp in milliseconds.",
             icon: "fa-clock-o",
             settings: {
             },
@@ -303,12 +300,27 @@ function number_node_types(root){
                         parseInt(x)+"px";
                     node_dom.style.top =
                         parseInt(y)+"px";
-                    
+
                     root.draw_links();
                 }
             },
+        },
+        "string": {
+            inputs: [],
+            info: "",
+            icon: "fa-font",
+            outputs: ["string"],
+            settings: {
+                string: {
+                    type: "text",
+                    value: ""
+                }
+            },
+            calculate: function(nodes,id){
+                var self = nodes[id];
+                self.result = [nodes[id].settings["string"]];
+            },
         }
-
     };
 
     function run(nodes){
@@ -321,7 +333,7 @@ function number_node_types(root){
         }
 
         for(var i = 0; i < output_nodes.length; i++){
-            if(nodes[i] != false){
+            if(nodes[output_nodes[i]] !== false){
                 if(!climb_tree(nodes,output_nodes[i])){
                     break;
                 }
@@ -374,7 +386,7 @@ function number_node_types(root){
         }
         return result;
     }
-    
+
     function node_for_id(id){
         return SQSA(root.cont,"[data-node-id='"+id+"']")[0];
     }

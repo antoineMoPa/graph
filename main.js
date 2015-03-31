@@ -49,7 +49,7 @@ function new_graph(container){
         draw_links();
     }
 
-    var ls = window.localStorage.saved_node_sheet || "";
+    var ls = window.localStorage.saved_node_sheet || "a";
     if(ls != ""){
         sheet = JSON.parse(ls);
         init_from_sheet();
@@ -361,10 +361,7 @@ function new_graph(container){
         }
         function init_add_button(dom,system,type){
             dom.onclick = function(){
-                remove_class(
-                    dom.parentNode,
-                    "menu-panel-displayed"
-                );
+                close_menu_panels();
                 add_node(system,type);
             };
         }
