@@ -99,7 +99,6 @@ subpanel h3{
     min-height:95px;
     position:absolute;
     border-radius:4px;
-    box-shadow:0 0 4px #777;
 }
 
 content{
@@ -146,11 +145,6 @@ content{
     right:-7px;
 }
 
-.node-input:not(.input-selected),
-.node-output:not(.output-selected){
-    box-shadow:1px 0 2px #999;
-}
-
 .output-selected,
 .input-selected{
    background:#FFc532;
@@ -175,13 +169,6 @@ content{
 .node-input:nth-child(5),
 .node-output:nth-child(5){
     top:120px;
-}
-
-.moving-link-input .node-input:not(.input-selected):hover{
-    box-shadow:0 0 4px #FFc532;
-}
-.moving-link-output .node-output:hover{
-    box-shadow:0 0 4px #FFc532;
 }
 
 h3{
