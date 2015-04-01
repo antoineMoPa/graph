@@ -6,4 +6,5 @@ p.value-display{
     background:#ddd;
     padding:10px;
     overflow:hidden;
+    word-wrap:break-word;
 }

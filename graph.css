@@ -51,6 +51,7 @@ html,body{
 
 .menu-panel{
     background:#fefefe;
+    background:linear-gradient(#e5e5e5,#fefefe 5%);
     position:absolute;
     top:50px;
     left:0;

@@ -10,7 +10,6 @@ function array_node_types(root){
             info:
             "I understand this format: [1,2,3,4]<br>"
             +"Multi-Dimension: [[1,2,9],[2,3,6],[3,4,6]]",
-            title_info: "D3.js Array",
             settings: {
                 "array":{
                     type: "text",
@@ -24,6 +23,47 @@ function array_node_types(root){
                     var arr = JSON.parse(settings.array);
                 } catch (e){
                     var arr = [];
+                }
+                self.result = [arr];
+            }
+        },
+        "range": {
+            inputs: [],
+            outputs: ["array"],
+            icon: "fa-sort-amount-asc",
+            info: "Creates an array of values "
+                + "with given step",
+            settings: {
+                "from":{
+                    type: "float",
+                    value: "0",
+                },
+                "to":{
+                    type: "float",
+                    value: "10",
+                },
+                "step":{
+                    type: "float",
+                    value: "1",
+                }
+            },
+            calculate: function(nodes,id){
+                var self = nodes[id];
+                var settings = nodes[id].settings;
+                var from = settings.from;
+                var to = settings.to;
+                var step = settings.step;
+                var arr = [];
+
+                if(step == 0){
+                    root.happy_accident(
+                        id,
+                        "A step of 0 is impossible."
+                    )
+                } else {
+                    for(var i = 0; i*step <= to;i++){
+                        arr[i] = i * step;
+                    }
                 }
                 self.result = [arr];
             }
@@ -117,7 +157,7 @@ function array_node_types(root){
                 var res = root.get_input_result(nodes,id);
                 var node = root.node_for_id(id);
                 var d = SQSA(node,".value-display")[0];
-                d.innerHTML = res[0];
+                d.innerHTML = JSON.stringify(res[0]);
             },
             oncreate: function(node,id){
                 var p = create_dom("p","");
