@@ -159,6 +159,7 @@ function initInputs(parentNode, inputs, callback){
             "select[data-name="+input+"],"+
             "textarea[data-name="+input+"]"
         )[0];
+
         enableInput(
             html_input,
             inputs,
@@ -171,7 +172,7 @@ function initInputs(parentNode, inputs, callback){
 function enableInput(html_input, data_array, index, callback){
     var callback = callback || {};
     var type = html_input.type;
-
+    
     if( type == "file"
         && html_input.className.indexOf("image") != -1 ){
         html_input.onchange = function(e){

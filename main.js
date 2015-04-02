@@ -24,6 +24,7 @@ function new_graph(container){
         root.happy_accident = happy_accident;
         root.node_systems = 
             node_systems = {
+                flow: flow_node_types(root),
                 number: number_node_types(root),
                 array: array_node_types(root)
             }
@@ -54,10 +55,12 @@ function new_graph(container){
 
     var ls = window.localStorage.saved_node_sheet || "a";
     if(ls != ""){
-        sheet = JSON.parse(ls);
+        root.sheet = 
+            sheet = JSON.parse(ls);
         init_from_sheet();
     } else {
-        sheet = new_sheet();
+        root.sheet = 
+            sheet = new_sheet();
         add_node("number","number");
     }
 
