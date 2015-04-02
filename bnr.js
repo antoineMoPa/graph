@@ -60,6 +60,10 @@ function init_bnr(){
         // it should be in the first step
         var f_start = -1;
         for(var j = 0; j < f_steps[0].length; j++){
+            var node = nodes[f_steps[0][j]];
+            if(node == undefined){
+                return -1;
+            }
             if( nodes[f_steps[0][j]].type ==
                 "function start" ){
                 f_start = j;
@@ -165,9 +169,12 @@ function init_bnr(){
                 result[i] = undefined;
                 continue;
             }
-            result[i] =
-                nodes[outputNode]
-                .result[outputId];
+            var r = nodes[outputNode].result;
+            if(r != undefined){
+                result[i] = r[outputId];
+            } else {
+                result[i] = undefined
+            }
         }
         return result;
     }

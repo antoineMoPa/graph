@@ -3,10 +3,10 @@ function flow_node_types(root){
     var output_nodes = [];
         
     var types = {
-        "call function": {
+        "function call": {
             inputs: ["input"],
             outputs: ["result"],
-            icon: "fa-table",
+            icon: "fa-arrow-circle-right",
             settings: {
                 "name":{
                     type: "string",
@@ -34,7 +34,7 @@ function flow_node_types(root){
         "function start": {
             inputs: [],
             outputs: ["input"],
-            icon: "fa-table",
+            icon: "fa-angle-double-left",
             settings: {
                 "name":{
                     type: "string",
@@ -47,7 +47,7 @@ function flow_node_types(root){
         "function end": {
             inputs: ["output"],
             outputs: [],
-            icon: "fa-table",
+            icon: "fa-angle-double-right",
             settings: {
             },
             calculate: function(nodes,id){
@@ -59,7 +59,7 @@ function flow_node_types(root){
         "map": {
             inputs: [],
             outputs: ["array"],
-            icon: "fa-table",
+            icon: "fa-bars",
             settings: {
                 "array":{
                     type: "text",
