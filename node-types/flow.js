@@ -4,9 +4,10 @@ function flow_node_types(root){
         
     var types = {
         "function call": {
-            inputs: ["input"],
-            outputs: ["result"],
+            inputs: ["input 1","input 2","input 3"],
+            outputs: ["result 1","result 2","result 3"],
             icon: "fa-arrow-circle-right",
+            info: "Hint: you need a start and an end for every function.",
             settings: {
                 "name":{
                     type: "string",
@@ -33,31 +34,31 @@ function flow_node_types(root){
         },
         "function start": {
             inputs: [],
-            outputs: ["input"],
+            info: "Do your things and plug your result to a function end",
+            outputs: [
+                "output 1",
+                "output 2",
+                "output 3"
+            ],
             icon: "fa-angle-double-left",
             settings: {
                 "name":{
                     type: "string",
                     value: "",
-                },
-                "number of inputs":{
-                    type: "integer",
-                    value: "1"
                 }
             },
-            oncreate: function(nodes,id){
-                //var self = nodes[id];
-                //var settings = self.settings;
-            },
             calculate: function(nodes,id){
-                
             }
         },
         "function end": {
-            inputs: ["output"],
+            inputs: ["input 1","input 2","input 3"],
             outputs: [],
             icon: "fa-angle-double-right",
+            info: "Plug in the return value of your procedure",
             settings: {
+            },
+            oncreate: function(node,id){
+                node.style.minHeight = "110px";
             },
             calculate: function(nodes,id){
                 var self = nodes[id];

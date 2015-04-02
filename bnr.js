@@ -17,7 +17,6 @@ function init_bnr(){
             return -1;
         } else {
             nodes[func.start].result = inputs;
-            console.log(nodes[func.start]);
             root.bnr.calculate_steps(nodes,func.steps);
             return func.end;
         }
@@ -144,6 +143,9 @@ function init_bnr(){
     climb = root.bnr.climb_tree;
     
     root.bnr.calculate = function(nodes,id){
+        if(id == -1){
+            return;
+        }
         var system = nodes[id].system;
         var type = nodes[id].type;
         var nt = root.node_systems[system][type];

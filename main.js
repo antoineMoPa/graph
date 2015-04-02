@@ -296,6 +296,9 @@ function new_graph(container){
 
 
     function node_output_click(e){
+        if(last_clicked_output != null){
+            last_clicked_output.style.background = "#ddd";
+        }
         last_clicked_output = this;
         this.style.background = "#fb3";
     }
