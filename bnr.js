@@ -17,6 +17,7 @@ function init_bnr(){
             return -1;
         } else {
             nodes[func.start].result = inputs;
+            console.log(nodes[func.start]);
             root.bnr.calculate_steps(nodes,func.steps);
             return func.end;
         }
@@ -66,11 +67,11 @@ function init_bnr(){
             }
             if( nodes[f_steps[0][j]].type ==
                 "function start" ){
-                f_start = j;
+                f_start = f_steps[0][j];
                 break;
             }
         }
-
+        
         if(f_start == -1){
             root.happy_accident(
                 id,

@@ -23,7 +23,7 @@ function flow_node_types(root){
                         self.settings.name,
                         res
                     );
-
+                
                 if(end == -1){
                     self.result = [null];
                 } else {
@@ -39,9 +39,18 @@ function flow_node_types(root){
                 "name":{
                     type: "string",
                     value: "",
+                },
+                "number of inputs":{
+                    type: "integer",
+                    value: "1"
                 }
             },
+            oncreate: function(nodes,id){
+                //var self = nodes[id];
+                //var settings = self.settings;
+            },
             calculate: function(nodes,id){
+                
             }
         },
         "function end": {
@@ -68,7 +77,7 @@ function flow_node_types(root){
             },
             calculate: function(nodes,id){
                 var self = nodes[id];
-                var settings = nodes[id].settings;
+                var settings = self.settings;
                 try{
                     var arr = JSON.parse(settings.array);
                 } catch (e){
