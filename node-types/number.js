@@ -271,6 +271,9 @@ function number_node_types(root){
                             },
                             updater_time_interval
                         );
+                    } else {
+                        clearInterval(updater_interval);
+                        updater_interval = null;
                     }
                 }
             },
