@@ -1,7 +1,7 @@
 function flow_node_types(root){
     var root = root;
     var output_nodes = [];
-        
+
     var types = {
         "function call": {
             inputs: ["input 1","input 2","input 3"],
@@ -24,7 +24,7 @@ function flow_node_types(root){
                         self.settings.name,
                         res
                     );
-                
+
                 if(end == -1){
                     self.result = [null];
                 } else {
@@ -65,29 +65,8 @@ function flow_node_types(root){
                 var res = root.get_input_result(nodes,id);
                 self.result = res;
             }
-        },
-        "map": {
-            inputs: [],
-            outputs: ["array"],
-            icon: "fa-bars",
-            settings: {
-                "array":{
-                    type: "text",
-                    value: "",
-                }
-            },
-            calculate: function(nodes,id){
-                var self = nodes[id];
-                var settings = self.settings;
-                try{
-                    var arr = JSON.parse(settings.array);
-                } catch (e){
-                    var arr = [];
-                }
-                self.result = [arr];
-            }
         }
     };
-    
+
     return types;
 }

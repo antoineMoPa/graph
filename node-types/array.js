@@ -1,7 +1,7 @@
 function array_node_types(root){
     var root = root;
     var output_nodes = [];
-        
+
     var types = {
         "array text input": {
             inputs: [],
@@ -112,7 +112,7 @@ function array_node_types(root){
                     }
                     return res;
                 }
-                
+
                 switch(settings.operation){
                 case "+":
                     res = array_operation(a,b,function(a,b){
@@ -167,12 +167,45 @@ function array_node_types(root){
             },
             calculate: function(){},
             settings: {
-                
+
             },
-            
+        },
+        "map": {
+            inputs: ["array"],
+            outputs: ["array"],
+            icon: "fa-bars",
+            title_info: "run a function on all elements of array",
+            info: "Outputs the resulting array",
+            settings: {
+                "function":{
+                    type: "string",
+                    value: ""
+                }
+            },
+            calculate: function(nodes,id){
+                var self = nodes[id];
+                var name = self.settings["function"];
+                var res = root.get_input_result(nodes,id);
+                var arr = res[0];
+                for(var i = 0, l = arr.length; i < l;i++){
+                    var end = root.bnr
+                        .run_function(
+                            nodes,
+                            name,
+                            [arr[i]]
+                        );
+                    if(i == 0 && end == -1){
+                        self.result = null;
+                        return;
+                    } else {
+                        arr[i] = nodes[end].result[0];
+                    }
+                }
+                self.result = [arr];
+            }
         }
     };
-    
-    
+
+
     return types;
 }

@@ -143,7 +143,7 @@ function init_bnr(){
     climb = root.bnr.climb_tree;
     
     root.bnr.calculate = function(nodes,id){
-        if(id == -1){
+        if(id == -1 || nodes[id] == false){
             return;
         }
         var system = nodes[id].system;
