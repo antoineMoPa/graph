@@ -1,12 +1,12 @@
 function array_node_types(root){
     var root = root;
     var output_nodes = [];
-
+    
     var types = {
         "array text input": {
             inputs: [],
             outputs: ["array"],
-            icon: "fa-table",
+            icon: "fa-code",
             info:
             "I understand this format: [1,2,3,4]<br>"
             +"Multi-Dimension: [[1,2,9],[2,3,6],[3,4,6]]",
@@ -151,18 +151,40 @@ function array_node_types(root){
         "output": {
             inputs: ["d3.js array"],
             outputs: [],
-            icon: "fa-desktop",
-            title_info: "D3.js Array",
+            icon: "fa-table",
+            title_info: "Array table output",
             onresult: function(nodes,id){
                 var res = root.get_input_result(nodes,id);
                 var node = root.node_for_id(id);
-                var d = SQSA(node,".value-display")[0];
-                d.innerHTML = JSON.stringify(res[0]);
+                var data = res[0];
+                var d = SQSA(node,".value-display-table")[0];
+                d.innerHTML = "";
+                var table = create_dom("table","");
+                if(data == undefined){
+                    return;
+                }
+                for(var i = 0; i < data.length;i++){
+                    var row = create_dom("tr","");
+                    if(Array.isArray(data[i])){
+                        for(var j = 0; j < data[i].length; j++){
+                            console.log(data[i][j]);
+                            add_cell(data[i][j],row,table);
+                        }
+                    } else {
+                        add_cell(data[i],row,table);
+                    }
+                    table.appendChild(row);
+                }
+                function add_cell(content,row,table){
+                    var cell = create_dom("td",content);
+                    row.appendChild(cell);
+                }
+                d.appendChild(table);
             },
             oncreate: function(node,id){
-                var p = create_dom("p","");
-                add_class(p,"value-display");
-                SQSA(node,"content")[0].appendChild(p);
+                var div = create_dom("div","");
+                add_class(div,"value-display-table");
+                SQSA(node,"content")[0].appendChild(div);
                 root.output_nodes.push(id);
             },
             calculate: function(){},
