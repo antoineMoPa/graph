@@ -3,6 +3,27 @@ function array_node_types(root){
     var output_nodes = [];
     
     var types = {
+        "array spreadsheet": {
+            inputs: [],
+            outputs: ["array"],
+            icon: "fa-table",
+            settings: {
+                "table":{
+                    type: "spreadsheet",
+                    value: "",
+                }
+            },
+            calculate: function(nodes,id){
+                var self = nodes[id];
+                var settings = nodes[id].settings;
+                try{
+                    var arr = settings.table;
+                } catch (e){
+                    var arr = [];
+                }
+                self.result = [arr];
+            }
+        },
         "array text input": {
             inputs: [],
             outputs: ["array"],
@@ -166,8 +187,7 @@ function array_node_types(root){
                 for(var i = 0; i < data.length;i++){
                     var row = create_dom("tr","");
                     if(Array.isArray(data[i])){
-                        for(var j = 0; j < data[i].length; j++){
-                            console.log(data[i][j]);
+                        for(var j=0;j<data[i].length;j++){
                             add_cell(data[i][j],row,table);
                         }
                     } else {

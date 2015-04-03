@@ -9,18 +9,19 @@ p.value-display{
     word-wrap:break-word;
 }
 
-.value-display-table tr:nth-child(2n+1){
-    background:#ddd;
-}
-
-.value-display-table tr:nth-child(2n+1) td:nth-child(2n){
-    background:#eee;
-}
-
-.value-display-table td{
+table td{
+    background:#fff;
     padding:4px;
 }
 
-.value-display-table table{
+table tr:nth-child(2n+1){
+    background:#ddd;
+}
+
+table tr:nth-child(2n+1) td:nth-child(2n){
+    background:#eee;
+}
+
+table{
     border-collapse:collapse;
 }

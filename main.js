@@ -107,6 +107,8 @@ function new_graph(container){
                     optdom.innerHTML = val;
                     input.appendChild(optdom);
                 }
+            } else if (type == "spreadsheet"){
+                init_spreadsheet(dom,input,settings,name);
             }
 
             input.setAttribute(
@@ -119,6 +121,80 @@ function new_graph(container){
         initInputs(node,settings,some_value_has_changed);
     }
 
+    function init_spreadsheet(dom, input, settings, name){
+        var table = SQSA(dom,"table")[0];
+        var input = SQSA(dom,"input")[0];
+        var row_num = 0;
+        var col_num = 0;
+        var result = [];
+        
+        add_row();
+        add_row();
+        add_col();
+        add_col();
+        // i : row
+        // j : column
+        function add_row(){
+            var row = create_dom("tr","");
+            table.appendChild(row);
+            arr = [];
+            for(var i = 0; i < col_num; i++){
+                add_cell(row,row_num,i);
+                arr.push("0");
+            }
+            result.push(arr);
+            row_num++;
+            save();
+        }
+        function add_col(){
+            var rows = SQSA(table,"tr");
+            for(var i = 0; i < row_num; i++){
+                add_cell(rows[i],i,col_num);
+                result[i].push("0");
+            }
+            col_num++;
+            save();
+        }
+        function add_cell(row,i,j){
+            var cell = create_dom("td","0");
+            cell.contentEditable = "true";
+            cell.onpaste =
+                cell.oncopy =
+                cell.onkeydown =
+                function(e){
+                    if(e.keyCode == 13 || e.keyCode == 40){
+                        e.preventDefault();
+                        // enter
+                        if(i == row_num-1){
+                            add_row();
+                        }
+                        // go to next cell vertically
+                        SQSA(row.nextSibling,"td")[j]
+                            .focus();
+                    } else if( e.keyCode == 38){
+                        // up
+                        // go to previous cell vertically
+                        SQSA(row.previousSibling,"td")[j]
+                            .focus();
+                    } else if( e.keyCode == 9
+                        && e.shiftKey == false){
+                        // tab
+                        if (j == col_num - 1){
+                            e.preventDefault();
+                            add_col();
+                        }
+                    }
+                    result[i][j] = cell.innerHTML;
+                    save();
+                };
+            row.appendChild(cell);
+        }
+        function save(){
+            settings[name] = result;
+            some_value_has_changed();
+        }
+    }
+    
     function some_value_has_changed(){
         clear_happy_errors();
         root.bnr.run(sheet.nodes);
