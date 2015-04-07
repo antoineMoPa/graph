@@ -24,6 +24,7 @@ function new_graph(container){
         root.happy_accident = happy_accident;
         root.node_systems = 
             node_systems = {
+                general: general_node_types(root),
                 web: web_node_types(root),
                 flow: flow_node_types(root),
                 number: number_node_types(root),

@@ -10,7 +10,7 @@ function array_node_types(root){
             settings: {
                 "table":{
                     type: "spreadsheet",
-                    value: "",
+                    value: [[0,0],[0,0]],
                 }
             },
             calculate: function(nodes,id){
@@ -169,49 +169,6 @@ function array_node_types(root){
                 self.result = [res];
             }
         },
-        "output": {
-            inputs: ["d3.js array"],
-            outputs: [],
-            icon: "fa-table",
-            title_info: "Array table output",
-            onresult: function(nodes,id){
-                var res = root.get_input_result(nodes,id);
-                var node = root.node_for_id(id);
-                var data = res[0];
-                var d = SQSA(node,".value-display-table")[0];
-                d.innerHTML = "";
-                var table = create_dom("table","");
-                if(data == undefined){
-                    return;
-                }
-                for(var i = 0; i < data.length;i++){
-                    var row = create_dom("tr","");
-                    if(Array.isArray(data[i])){
-                        for(var j=0;j<data[i].length;j++){
-                            add_cell(data[i][j],row,table);
-                        }
-                    } else {
-                        add_cell(data[i],row,table);
-                    }
-                    table.appendChild(row);
-                }
-                function add_cell(content,row,table){
-                    var cell = create_dom("td",content);
-                    row.appendChild(cell);
-                }
-                d.appendChild(table);
-            },
-            oncreate: function(node,id){
-                var div = create_dom("div","");
-                add_class(div,"value-display-table");
-                SQSA(node,"content")[0].appendChild(div);
-                root.output_nodes.push(id);
-            },
-            calculate: function(){},
-            settings: {
-
-            },
-        },
         "map": {
             inputs: ["array"],
             outputs: ["array"],
@@ -267,7 +224,6 @@ function array_node_types(root){
                 for(var i = 0; i < res_arr.length; i++){
                     res_arr[i] = 0;
                 }
-                console.log(res_arr);
                 for(var i = 0; i < arr.length;i++){
                     for(var j = 0; j < arr[i].length;j++){
                         res_arr[j] += parseFloat(arr[i][j]);

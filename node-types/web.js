@@ -1,7 +1,5 @@
 function web_node_types(root){
     var root = root;
-    var updater_interval = null;
-    var updater_time_interval = 0;
     var server_url = "http://127.0.0.1:8000"
     var proxy_url = server_url + "/proxy?url=";
     

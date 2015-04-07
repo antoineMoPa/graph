@@ -1,6 +1,6 @@
-/* 
-   I decided not to use jQuery 
-   So I wrote happy little shortcuts 
+/*
+   I decided not to use jQuery
+   So I wrote happy little shortcuts
    to some longer "pure js™" functions
 */
 
@@ -97,7 +97,7 @@ function init_panels_ui(){
             }
 
             close_menu_panels();
-            
+
             if(!panelOpened){
                 add_class(panel,"menu-panel-displayed")
             }
@@ -172,7 +172,7 @@ function initInputs(parentNode, inputs, callback){
 function enableInput(html_input, data_array, index, callback){
     var callback = callback || {};
     var type = html_input.type;
-    
+
     if( type == "file"
         && html_input.className.indexOf("image") != -1 ){
         html_input.onchange = function(e){
@@ -218,23 +218,31 @@ function init_spreadsheet(
     var row_num = 0;
     var col_num = 0;
     var result = [];
-    var initial_value = settings[name];
-    if(initial_value == undefined){
+    var initial_value;
+
+    if(settings[name] == undefined){
         initial_value = [[0,0],[0,0]];
-    }
-    var w = initial_value[0].length;
-    for(var i = 0;i < w;i++){
-        add_col();
+    } else {
+        initial_value = settings[name];
     }
     
-    for(var i = 1;i < initial_value.length;i++){
-        result[i] = new Array(w);
-        add_row();
+    var w = initial_value[0].length;
+    var h = initial_value.length;
+
+    // create table of the right size
+    for(var i = 0;i < h;i++){
+        if(row_num <= i){
+            add_row();
+        }
         for(var j = 0;j < w;j++){
-            result[i][j] = initial_value[i][j];
-            
+            if(col_num <= j){
+                add_col();
+            }
         }
     }
+
+    result = initial_value;
+    save();
     
     // i : row
     // j : column
@@ -260,8 +268,12 @@ function init_spreadsheet(
         save();
     }
     function add_cell(row,i,j){
-        var cell = create_dom("td","0");
+        var content = (initial_value[i]||[])[j] || 0;
+        var cell = create_dom("td",content);
         cell.contentEditable = "true";
+
+        cell.onkeyup = save;
+
         cell.onpaste =
             cell.oncopy =
             cell.onkeydown =

@@ -119,7 +119,7 @@ function init_bnr(){
         
         function callback(){
             blocking--;
-            if(blocking == 0){
+            if(blocking <= 0){
                 root.bnr
                     .calculate_async(nodes,steps,layer + 1);
             }
@@ -128,7 +128,6 @@ function init_bnr(){
         for(var i = 0; i < steps[layer].length; i++){
             var msg = root.bnr
                 .calculate(nodes, steps[layer][i],callback);
-            
             if(msg == "wait"){
                 block = true;
                 blocking++;
