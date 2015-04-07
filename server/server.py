@@ -12,6 +12,9 @@ class Graph_Server(object):
         res = urllib.request.urlopen(url)
         data = res.read()
         charset = res.headers.get_content_charset()
+        if(charset == None):
+            return data
+
         data = data.decode(charset)
         return str(data)
     

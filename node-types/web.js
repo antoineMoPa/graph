@@ -11,25 +11,28 @@ function web_node_types(root){
             settings: {
                 url:{
                     type: "string",
-                    value: 0,
+                    value: "http://example.com",
                 }
             },
             calculate: function(nodes,id,callback){
                 var self = nodes[id];
-                var url = nodes[id].settings["url"];
-
-                if(url.indexOf("http") == -1){
-                    url = "http://" + url;
+                var url = ""+nodes[id].settings["url"];
+                if(url != ""){
+                    if(url.indexOf("http") == -1){
+                        url = "http://" + url;
+                    }
+                    
+                    ajax.get(proxy_url+url,function(d){
+                        self.result = [d];
+                        callback();
+                    });
+                    
+                    // tell bnr to wait until
+                    // callback is called
+                    return "wait";
+                } else {
+                    return "";
                 }
-                
-                ajax.get(proxy_url+url,function(d){
-                    self.result = [d];
-                    callback();
-                });
-                
-                // tell bnr to wait until
-                // callback is called
-                return "wait";
             }
         },
     };

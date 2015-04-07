@@ -102,6 +102,10 @@ subpanel h3{
     border-radius:4px;
 }
 
+.node content{
+    overflow:hidden;
+}
+
 content{
     display:block;
     margin:10px;
