@@ -51,7 +51,6 @@ html,body{
 
 .menu-panel{
     background:#fefefe;
-    background:linear-gradient(#e5e5e5,#fefefe 5%);
     position:absolute;
     top:50px;
     left:0;
@@ -82,6 +81,7 @@ label{
 subpanel h3{
     font-weight:300;
     text-transform:capitalize;
+    line-height: 37px;
 }
 .graph{
     font-family:sans-serif;
