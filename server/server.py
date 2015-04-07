@@ -1,32 +1,21 @@
-from http.server import *
+import cherrypy
+import urllib
 
-
-def run():
-    server_class=HTTPServer
-    handler_class=Graph_Server
-    server_address = ('', 8000)
-    httpd = server_class(server_address, handler_class)
-    httpd.serve_forever()
+class Graph_Server(object):
+    @cherrypy.expose
+    def index(self):
+        return "Hello!"
+    @cherrypy.expose
+    def proxy(self,url):
+        cherrypy.response\
+            .headers['Access-Control-Allow-Origin'] = "*"
+        res = urllib.request.urlopen(url)
+        data = res.read()
+        charset = res.headers.get_content_charset()
+        data = data.decode(charset)
+        return str(data)
     
-def nice_str(string):
-    return bytes(string, "utf-8")
 
-    
-class Graph_Server(BaseHTTPRequestHandler):    
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-type", "text/plain")
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.end_headers()
-        self.wfile.write(nice_str("dude"))
-        self.wfile.write(nice_str(self.path))
 
-    def do_POST(self):
-        self.send_response(200)
-        self.send_header("Content-type", "text/plain")
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.end_headers()
-        self.wfile.write(nice_str("dude"))
-        self.wfile.write(nice_str(self.path))
-
-run()
+cherrypy.config.update({'server.socket_port': 8000})
+cherrypy.quickstart(Graph_Server())

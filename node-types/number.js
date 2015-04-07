@@ -30,11 +30,11 @@ function number_node_types(root){
                 var res = root.get_input_result(nodes,id);
                 var node = root.node_for_id(id);
                 var d = SQSA(node,".value-display")[0];
-                d.innerHTML = res[0];
+                d.textContent = res[0];
             },
             oncreate: function(node,id){
-                var p = create_dom("p","");
-                add_class(p,"value-display");
+                var p = create_dom("pre","");
+                add_class(p,"value-display");                
                 SQSA(node,"content")[0].appendChild(p);
                 root.output_nodes.push(id);
             },

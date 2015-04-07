@@ -245,6 +245,36 @@ function array_node_types(root){
                 }
                 self.result = [arr];
             }
+        },
+        "column sum": {
+            inputs: ["array"],
+            outputs: ["array"],
+            icon: "fa-cog",
+            title_info: "",
+            info: "Outputs the sum of the columns",
+            settings: {
+            },
+            calculate: function(nodes,id){
+                var self = nodes[id];
+                var name = self.settings["function"];
+                var res = root.get_input_result(nodes,id);
+                var arr = res[0];
+                if(arr[0] == null){
+                    self.result = [null];
+                    return;
+                }
+                var res_arr = new Array(arr[0].length);
+                for(var i = 0; i < res_arr.length; i++){
+                    res_arr[i] = 0;
+                }
+                console.log(res_arr);
+                for(var i = 0; i < arr.length;i++){
+                    for(var j = 0; j < arr[i].length;j++){
+                        res_arr[j] += parseFloat(arr[i][j]);
+                    }
+                }
+                self.result = [res_arr];
+            }
         }
     };
 

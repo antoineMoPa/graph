@@ -206,3 +206,95 @@ function enableInput(html_input, data_array, index, callback){
             }
     }
 }
+
+function init_spreadsheet(
+    dom,
+    input,
+    settings,
+    name,
+    callback){
+    var table = SQSA(dom,"table")[0];
+    var input = SQSA(dom,"input")[0];
+    var row_num = 0;
+    var col_num = 0;
+    var result = [];
+    var initial_value = settings[name];
+    if(initial_value == undefined){
+        initial_value = [[0,0],[0,0]];
+    }
+    var w = initial_value[0].length;
+    for(var i = 0;i < w;i++){
+        add_col();
+    }
+    
+    for(var i = 1;i < initial_value.length;i++){
+        result[i] = new Array(w);
+        add_row();
+        for(var j = 0;j < w;j++){
+            result[i][j] = initial_value[i][j];
+            
+        }
+    }
+    
+    // i : row
+    // j : column
+    function add_row(){
+        var row = create_dom("tr","");
+        table.appendChild(row);
+        arr = [];
+        for(var i = 0; i < col_num; i++){
+            add_cell(row,row_num,i);
+            arr.push("0");
+        }
+        result.push(arr);
+        row_num++;
+        save();
+    }
+    function add_col(){
+        var rows = SQSA(table,"tr");
+        for(var i = 0; i < row_num; i++){
+            add_cell(rows[i],i,col_num);
+            result[i].push("0");
+        }
+        col_num++;
+        save();
+    }
+    function add_cell(row,i,j){
+        var cell = create_dom("td","0");
+        cell.contentEditable = "true";
+        cell.onpaste =
+            cell.oncopy =
+            cell.onkeydown =
+            function(e){
+                if(e.keyCode == 13 || e.keyCode == 40){
+                    e.preventDefault();
+                    // enter
+                    if(i == row_num-1){
+                        add_row();
+                    }
+                    // go to next cell vertically
+                    SQSA(row.nextSibling,"td")[j]
+                        .focus();
+                } else if( e.keyCode == 38){
+                    // up
+                    // go to previous cell vertically
+                    SQSA(row.previousSibling,"td")[j]
+                        .focus();
+                } else if( e.keyCode == 9
+                           && e.shiftKey == false){
+                    // tab
+                    if (j == col_num - 1){
+                        e.preventDefault();
+                        add_col();
+                    }
+                }
+                result[i][j] = cell.innerHTML;
+                save();
+            };
+        row.appendChild(cell);
+    }
+    function save(){
+        settings[name] = result;
+        callback();
+    }
+}

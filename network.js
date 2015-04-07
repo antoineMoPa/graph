@@ -8,6 +8,10 @@ ajax.get = function(url,callback){
     });
 }
 
+ajax.json = function(url, callback){
+    
+}
+
 /*
   ex:
   ajax.post(

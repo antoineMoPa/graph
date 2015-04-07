@@ -7,7 +7,6 @@
 */
 function init_bnr(){
     root.bnr = {};
-    var climb = null;
     var functions = {};
     
     root.bnr.run_function = function(nodes,name,inputs){
@@ -35,7 +34,16 @@ function init_bnr(){
         }
         for(var i = 0; i < output_nodes.length; i++){
             if(nodes[output_nodes[i]] !== false){
-                climb(nodes,output_nodes[i]);
+                // Build tree
+                var tree = root.bnr
+                    .reverse_tree(nodes,output_nodes[i]);
+
+                // add output node
+                tree.push([output_nodes[i]]);
+
+                // run through steps
+                root.bnr
+                    .calculate_steps(nodes,tree);
             }
         }
     }
@@ -87,13 +95,50 @@ function init_bnr(){
     };
     
     root.bnr.calculate_steps = function(nodes,steps){
-        for(var i = 0; i < steps.length; i++){
-            for(var j = 0; j < steps[i].length; j++){
-                root.bnr.calculate(nodes, steps[i][j]);
+        root.bnr.calculate_async(nodes,steps,0);
+    };
+    
+    /* This is interesting 
+       
+       It processes layer by layer to compute every node.
+       When a node returns "wait", it does not perform the
+       next layer right now. It waits for a callback to be
+       called (back).
+       
+       This allows asynchronous fun like querying the web
+       or processing data somewhere.
+    */
+    root.bnr.calculate_async = function(nodes,steps,layer){
+        if(layer == undefined){
+            layer = 0
+        } else if (layer >= steps.length){
+            return;
+        }
+        var block = false;
+        var blocking = 0;
+        
+        function callback(){
+            blocking--;
+            if(blocking == 0){
+                root.bnr
+                    .calculate_async(nodes,steps,layer + 1);
             }
         }
-    };
-
+        
+        for(var i = 0; i < steps[layer].length; i++){
+            var msg = root.bnr
+                .calculate(nodes, steps[layer][i],callback);
+            
+            if(msg == "wait"){
+                block = true;
+                blocking++;
+            }
+        }
+        if(!block){
+            callback();
+        }
+    }
+    
     /**
        Climbs from a node backwards 
        (hence the word "reverse").
@@ -121,36 +166,17 @@ function init_bnr(){
         }
         return steps;
     }
-    
-    root.bnr.climb_tree = function(nodes,id){
-        // The result can already exist
-        if(nodes[id].result != undefined){
-            return;
-        }
-        // Make sure parents results are found
-        var inputs = nodes[id].inputs;
-        for(var i = 0; i < inputs.length; i++){
-            if(inputs[i][0] != -1){
-                if(nodes[inputs[i][0]].result == undefined){
-                    climb(nodes, inputs[i][0]);
-                }
-            }
-        }
-        // find result according to inputs
-        root.bnr.calculate(nodes,id);
-    }
-    
-    climb = root.bnr.climb_tree;
-    
-    root.bnr.calculate = function(nodes,id){
+        
+    root.bnr.calculate = function(nodes,id,callback){
         if(id == -1 || nodes[id] == false){
             return;
         }
+        var ret;
         var system = nodes[id].system;
         var type = nodes[id].type;
         var nt = root.node_systems[system][type];
         if(nt.calculate != undefined){
-            nt.calculate(nodes,id);
+            ret = nt.calculate(nodes,id,callback);
         } else {
             console.error(
                 "node does not have a calculate function"
@@ -159,6 +185,7 @@ function init_bnr(){
         if(nt.onresult != undefined){
             nt.onresult(nodes,id);
         }
+        return ret;
     }
     
     root.get_input_result = function(nodes,id){
