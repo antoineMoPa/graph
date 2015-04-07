@@ -2,7 +2,7 @@ function number_node_types(root){
     var root = root;
     var updater_interval = null;
     var updater_time_interval = 0;
-    
+
     var types = {
         "number": {
             inputs: [],
@@ -118,8 +118,6 @@ function number_node_types(root){
             },
         }
     };
-    
+
     return types;
 }
-
-

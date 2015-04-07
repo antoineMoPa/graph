@@ -1,7 +1,7 @@
 function array_node_types(root){
     var root = root;
     var output_nodes = [];
-    
+
     var types = {
         "array spreadsheet": {
             inputs: [],
@@ -109,7 +109,6 @@ function array_node_types(root){
                 var a = inputs[0];
                 var b = inputs[1];
                 var res;
-
                 function array_operation(a,b,op){
                     var res = [];
                     if( Array.isArray(a)
@@ -130,6 +129,8 @@ function array_node_types(root){
                         res = a.map(function(v,i,arr){
                             return op(v,b);
                         });
+                    } else {
+                        res = op(a,b);
                     }
                     return res;
                 }

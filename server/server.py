@@ -17,7 +17,7 @@ class Graph_Server(object):
 
         data = data.decode(charset)
         return str(data)
-    
+
 
 
 cherrypy.config.update({'server.socket_port': 8000})
