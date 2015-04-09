@@ -214,3 +214,20 @@ happyerror{
     margin-right:5px;
 }
 
+.data-popup{
+    position:absolute;
+    background:#fff;
+    min-height:400px;
+    top:0;
+    left:0;
+    padding:20px;
+    width:100%;
+    height:100%;
+    z-index:10;
+    box-shadow: 0 0 5px #777 inset;
+}
+
+.close-button{
+    font-weight:600;
+    cursor:pointer;
+}

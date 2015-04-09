@@ -71,6 +71,8 @@ tabtitle.active{
     color:#000;
     opacity:1;
 }
+.btn:hover,
+.btn:active,
 action:active,
 action:hover{
     background:#18d;
@@ -96,7 +98,7 @@ text-right, .text-right{
 .actions action{
     margin:0;
 }
-switchoption,action{
+.btn,switchoption,action{
     cursor:pointer;
     color:#fff;
     background:#3af;

@@ -59,7 +59,7 @@ function new_graph(container){
     if(ls != ""){
         root.sheet = 
             sheet = JSON.parse(ls);
-        init_from_sheet();
+        init_from_sheet(sheet);
     } else {
         root.sheet = 
             sheet = new_sheet();
@@ -70,8 +70,9 @@ function new_graph(container){
     window.addEventListener("resize",resize)
     draw_links();
 
-    function init_from_sheet(){
-        var nodes = sheet.nodes;
+    function init_from_sheet(sh){
+        sheet = sh;
+        var nodes = sh.nodes;
         for(var i = 0; i < nodes.length; i++){
             if(nodes[i] != false){
                 init_node_dom(
@@ -82,6 +83,7 @@ function new_graph(container){
             }
         }
         some_value_has_changed();
+        draw_links();
     }
 
     /**
@@ -175,7 +177,19 @@ function new_graph(container){
 
     function init_node_dom(system,type,id){
         create_node_dom(nodes, system, type, function(node){
-            var nt = node_systems[system][type];
+            if( node_systems[system] != undefined
+                && node_systems[system][type] != undefined
+              ){
+                var nt = node_systems[system][type];
+            } else {
+                console.log(
+                    "Type " +
+                        type +
+                        " in system " +
+                        system +
+                        " was not found!"
+                );
+            }
             enable_node_mouse_down(node);
             node.setAttribute('data-node-id', id);
             create_input_and_outputs(nt, node);
@@ -323,33 +337,114 @@ function new_graph(container){
         };
     }
 
+    function data_popup(data){
+        var content = "";
+        
+        var div = create_dom("div.data-popup","");
+        var content = create_dom("div","");
+        var close_button = create_dom(
+            "div.close-button.btn",
+            "Close"
+        );
+        
+        if(typeof data == 'string'){
+            content.innerHTML = data;
+        } else {
+            content.appendChild(data);
+        }
+
+        div.appendChild(close_button);
+        div.appendChild(content);
+        close_button.onclick = remove;
+        document.body.appendChild(div);
+
+        function remove(){
+            document.body.removeChild(div);
+        }
+        
+        return {
+            remove: remove
+        };
+    }
+    
     function init_board_menu(){
         var menu = QSA(".menu-panel-board")[0];
 
-        var action = "clear everything";
-        var dom = create_dom("action",action);
-        dom.attributes['data-name'] = action;
-        menu.appendChild(dom);
-        init_button(dom,action);
-        prepend_fa_icon(dom,"fa-trash-o");
-        
+        var actions = [
+            {
+                name: "Save",
+                icon: "fa-cloud-download",
+                action: function(){
+                    var data = deep_copy(root.sheet);
+                    for(var i = 0; i < data.nodes.length; i++){
+                        data.nodes[i].result = undefined;
+                    }
+                    data_popup(JSON.stringify(data));
+                }
+            },
+            {
+                name: "Load",
+                icon: "fa-upload",
+                action: function(){
+                    var form = create_dom("div.load-form");
+                    var text = create_dom(
+                        "textarea.load-data","");
+                    var btn = create_dom(
+                        "a.btn.load-data-btn","LOAD");
+                    form.appendChild(text);
+                    form.appendChild(create_dom("br"));
+                    form.appendChild(btn);
+                    var p = data_popup(form);
+                    btn.onclick = function(){
+                        clear_sheet();
+                        init_globals();
+                        init_from_sheet(
+                            JSON.parse(text.value)
+                        );
+                        p.remove();
+                    };
+                }
+            },
+            {
+                name: "clear everything",
+                icon: "fa-trash-o",
+                action: function(){
+                    clear_sheet();
+                }
+            }
+        ];
+
+        for(var i = 0; i < actions.length; i++){
+            var action = actions[i];
+            var dom = create_dom("action",action.name);
+            dom.attributes['data-name'] = action.name;
+            menu.appendChild(dom);
+            init_button(dom,action.action);
+            prepend_fa_icon(dom,action.icon);
+            
+        }
+                
         function init_button(dom,action){
             dom.onclick = function(){
                 close_menu_panels();
-                init_globals();
-                var nodes = QSA(".node");
-                for(var i = 0; i < nodes.length;i++){
-                    if(nodes[i].tagName != "canvas"){
-                        nodes[i].parentNode
-                            .removeChild(nodes[i]);
-                    }
-                }
-                some_value_has_changed();
-                draw_links();
+                action();
             };
         }
     }
 
+    function clear_sheet(){
+        init_globals();
+        var nodes = QSA(".node");
+        for(var i = 0; i < nodes.length;i++){
+            if(nodes[i].tagName != "canvas"){
+                nodes[i].parentNode
+                    .removeChild(nodes[i]);
+            }
+        }
+        some_value_has_changed();
+        draw_links();
+    }
+    
     /**
        Happy little panel
     */

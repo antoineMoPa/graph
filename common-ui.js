@@ -48,7 +48,7 @@ function deep_copy(obj){
     var new_object = {};
     if(obj instanceof Array){
         new_object = [];
-    } else if(obj == null){
+    } else if(obj == null || obj == undefined){
         return null;
     } else if(typeof(obj) !== 'object'){
         /* If it is a variable, just return it */
@@ -81,9 +81,19 @@ function assert(condition,message){
     }
 }
 
+
+/**
+    @param tag example div.btn.carrot
+    creates a div with classes btn and carrot
+    @param content sets innerHTML
+ */
 function create_dom(tag,content){
-    var parent = document.createElement(tag);
-    parent.innerHTML = content;
+    var parent = document.createElement(tag.split(".")[0]);
+    var classes = tag.split(".").splice(1);
+    for(var i = 0; i < classes.length; i++){
+        add_class(parent,classes[i]);
+    }
+    parent.innerHTML = content || "";
     return parent;
 }
 
