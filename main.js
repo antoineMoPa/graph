@@ -335,6 +335,7 @@ function new_graph(container){
         
         function init_button(dom,action){
             dom.onclick = function(){
+                close_menu_panels();
                 init_globals();
                 var nodes = QSA(".node");
                 for(var i = 0; i < nodes.length;i++){

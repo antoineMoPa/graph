@@ -17,6 +17,8 @@ function general_node_types(root){
                 var res = root.get_input_result(nodes,id);
                 if(Array.isArray(res[0])){
                     output_table(nodes,id,res);
+                } else if(typeof(res[0] === 'object')){
+                    output_object(nodes,id,res);
                 } else {
                     output_value(nodes,id,res);
                 }
@@ -30,6 +32,26 @@ function general_node_types(root){
 
             },
         },
+        "Note": {
+            inputs: [],
+            outputs: [],
+            icon: "fa-pencil",
+            title_info: "Just some place to write text",
+            settings: {
+                text: {
+                    type: "text",
+                    value: ""
+                }
+            },
+            oncreate: function(node,id){
+                var node = root.node_for_id(id);
+                add_class(node,"note-node");
+            },
+            onresult: function(nodes,id){
+            },
+            calculate: function(nodes,id){
+            },
+        },
 
     };
 
@@ -37,6 +59,12 @@ function general_node_types(root){
         var node = root.node_for_id(id);
         var d = SQSA(node,".value-display")[0];
         d.textContent = res[0];
+    }
+
+    function output_object(nodes,id,res){
+        var node = root.node_for_id(id);
+        var d = SQSA(node,".value-display")[0];
+        d.textContent = JSON.stringify(res[0]);
     }
     
     function output_table(nodes,id,res){

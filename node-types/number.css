@@ -25,3 +25,19 @@ table tr:nth-child(2n+1) td:nth-child(2n){
 table{
     border-collapse:collapse;
 }
+
+.note-node{
+    width:400px;
+}
+.note-node label{
+    display:none;
+}
+.note-node textarea{
+    background: #ee9;
+    width:95%;
+    min-height:120px;
+    padding: 10px;
+    color: #555;
+    font-size: 16px;
+    resize:resize-y;
+}

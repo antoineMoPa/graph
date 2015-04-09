@@ -2,12 +2,15 @@ function web_node_types(root){
     var root = root;
     var server_url = "http://127.0.0.1:8000"
     var proxy_url = server_url + "/proxy?url=";
+
+    var web_cache = {};
     
     var types = {
         "content from url": {
             inputs: [],
             outputs: ["content"],
             icon: "fa-cloud-download",
+            info: "Results are cached until you reload the window.",
             settings: {
                 url:{
                     type: "string",
@@ -21,11 +24,17 @@ function web_node_types(root){
                     if(url.indexOf("http") == -1){
                         url = "http://" + url;
                     }
-                    
-                    ajax.get(proxy_url+url,function(d){
-                        self.result = [d];
+
+                    if(web_cache[url] != undefined){
+                        self.result = [web_cache[url]];
                         callback();
-                    });
+                    } else {
+                        ajax.get(proxy_url+url,function(d){
+                            self.result = [d];
+                            web_cache[url] = d;
+                            callback();
+                        });
+                    }
                     
                     // tell bnr to wait until
                     // callback is called
@@ -35,6 +44,49 @@ function web_node_types(root){
                 }
             }
         },
+        "JSON string to object": {
+            inputs: ["string"],
+            outputs: ["object"],
+            icon: "fa-database",
+            info: "JSON is a method of storing data as text.",
+            settings: {
+            },
+            calculate: function(nodes,id,callback){
+                var self = nodes[id];
+                var inputs = root.get_input_result(nodes,id);
+                try{
+                    var res = JSON.parse(inputs[0]);
+                } catch(e){
+                    root.happy_accident(id,"could not understand JSON");
+                }
+                self.result = [res];
+            }
+        },
+        "Select ['part'] of object": {
+            inputs: ["JSON object selector"],
+            outputs: ["Sub object"],
+            icon: "fa-spoon",
+            info: "select a part of an object (From a JSON input, for example)",
+            settings: {
+                part:{
+                    type: "string",
+                    value: ""
+                }
+            },
+            oncreate: function(node,id){
+                root.output_nodes.push(id);
+                var div = create_dom("div","");
+                add_class(div,"json-el-list");
+                SQSA(node,"content")[0].appendChild(div);
+            },
+            calculate: function(nodes,id,callback){
+                var self = nodes[id];
+                var inputs = root.get_input_result(nodes,id);
+                var name = self.settings.part;
+                var part = deep_copy(inputs[0][name]);
+                self.result = [part];
+            }
+        }
     };
     
     return types;

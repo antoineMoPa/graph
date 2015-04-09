@@ -48,9 +48,11 @@ function deep_copy(obj){
     var new_object = {};
     if(obj instanceof Array){
         new_object = [];
-    }
-    if(obj == null){
+    } else if(obj == null){
         return null;
+    } else if(typeof(obj) !== 'object'){
+        /* If it is a variable, just return it */
+        return obj;
     }
     for(el in obj){
         if(typeof(obj[el]) == "object"){
