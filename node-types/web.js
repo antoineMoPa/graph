@@ -83,7 +83,11 @@ function web_node_types(root){
                 var self = nodes[id];
                 var inputs = root.get_input_result(nodes,id);
                 var name = self.settings.part;
-                var part = deep_copy(inputs[0][name]);
+                if(inputs[0] == undefined){
+                    var part = {};
+                } else {
+                    var part = deep_copy(inputs[0][name]);
+                }
                 self.result = [part];
             }
         }
