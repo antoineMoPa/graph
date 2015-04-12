@@ -2,7 +2,7 @@ function general_node_types(root){
     var root = root;
     var types = {
         "value output": {
-            inputs: ["d3.js array"],
+            inputs: ["value/array"],
             outputs: [],
             icon: "fa-table",
             title_info: "Array table output",
