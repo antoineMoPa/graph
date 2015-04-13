@@ -71,9 +71,9 @@ function array_node_types(root){
             calculate: function(nodes,id){
                 var self = nodes[id];
                 var settings = nodes[id].settings;
-                var from = settings.from;
-                var to = settings.to;
-                var step = settings.step;
+                var from = parseFloat(settings.from);
+                var to = parseFloat(settings.to);
+                var step = parseFloat(settings.step);
                 var arr = [];
 
                 if(step == 0){
@@ -82,8 +82,8 @@ function array_node_types(root){
                         "A step of 0 is impossible."
                     )
                 } else {
-                    for(var i = 0; i*step <= to;i++){
-                        arr[i] = i * step;
+                    for(var i = 0; i*step + from <= to;i++){
+                        arr[i] = i * step + from;
                     }
                 }
                 self.result = [arr];
