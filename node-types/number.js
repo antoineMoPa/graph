@@ -70,6 +70,54 @@ function number_node_types(root){
                 }
             },
         },
+        "trigonometry": {
+            inputs: ["number"],
+            outputs: ["output"],
+            icon: "fa-circle-thin",
+            settings: {
+                "function":{
+                    type: "either",
+                    values: ["sin","cos","tan"],
+                    value: "sin",
+                }
+            },
+            calculate: function(nodes,id){
+                var self = nodes[id];
+                var inputs = root.get_input_result(nodes,id);
+                var settings = self.settings;
+                var a = inputs[0];
+                var operation;
+                switch(settings["function"]){
+                case "sin":
+                    operation = function(a){
+                        return Math.sin(a);
+                    }
+                    break;
+                case "cos":
+                    operation = function(a){
+                        return Math.cos(a);
+                    }
+                    break;
+                case "tan":
+                    operation = function(a){
+                        return Math.tan(a);
+                    }
+                    break;
+                }
+
+                var res;
+                if(Array.isArray(a)){
+                    res = [];
+                    for(var i = 0; i < a.length; i++){
+                        res[i] = operation(a[i]);
+                    }
+                } else {
+                    res = operation(a);
+                }
+                
+                self.result = [res];
+            }
+        },
         "position node": {
             inputs: ["node id (number)","x","y"],
             info: "Places a node in this interface.<br>"
