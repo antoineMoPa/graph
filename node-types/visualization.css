@@ -2,3 +2,14 @@
 .chart rect{
     fill:red;
 }
+
+.axis{
+    fill:none;
+    stroke:#000;
+}
+
+.axis text{
+    font:10px sans-serif 300;
+    stroke:none;
+    fill:#000;
+}
