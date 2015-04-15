@@ -94,6 +94,9 @@ function viz_node_types(root){
             .append("rect")
             .attr("width",bar_width)
             .attr("height",function(d){
+                if(min_y >= 0){
+                    return y_s(max_y - (d[1] - min_y));
+                }
                 if(d[1] > 0){
                     return y_s(max_y - d[1]);
                 } else {
