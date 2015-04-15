@@ -56,16 +56,14 @@ function new_graph(container){
         draw_links();
     }
 
-    var ls = window.localStorage.saved_node_sheet || "";
-    if(ls != ""){
-        root.sheet = 
-            sheet = JSON.parse(ls);
-        init_from_sheet(sheet);
-    } else {
-        root.sheet = 
-            sheet = new_sheet();
-        add_node("number","number");
-    }
+    var storage = window.localStorage;
+    var ls = storage.saved_node_sheet || DEFAULT_SHEET;
+
+    root.sheet = 
+        sheet = JSON.parse(ls);
+    
+    init_from_sheet(sheet);
+
 
     resize();
     window.addEventListener("resize",resize)
@@ -404,6 +402,17 @@ function new_graph(container){
                         );
                         p.remove();
                     };
+                }
+            },
+            {
+                name: "Load default sheet",
+                icon: "fa-refresh",
+                action: function(){
+                    clear_sheet();
+                    init_globals();
+                    init_from_sheet(
+                        JSON.parse(DEFAULT_SHEET)
+                    );
                 }
             },
             {
