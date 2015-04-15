@@ -56,7 +56,7 @@ function new_graph(container){
         draw_links();
     }
 
-    var ls = window.localStorage.saved_node_sheet || "a";
+    var ls = window.localStorage.saved_node_sheet || "";
     if(ls != ""){
         root.sheet = 
             sheet = JSON.parse(ls);
