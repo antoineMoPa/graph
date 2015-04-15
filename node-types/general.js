@@ -32,6 +32,86 @@ function general_node_types(root){
 
             },
         },
+        "operation": {
+            inputs: ["array","array or number"],
+            outputs: ["output"],
+            icon: "fa-calculator",
+            title_info: "Performs operations on arrays or numbers",
+            settings: {
+                operation:{
+                    type: "either",
+                    values: ["+","-","*","÷","exponent","modulo"],
+                    value: "+",
+                }
+            },
+            calculate: function(nodes,id){
+                var self = nodes[id];
+                var inputs = root.get_input_result(nodes,id);
+                var settings = nodes[id].settings;
+                var a = deep_copy(inputs[0]);
+                var b = deep_copy(inputs[1]);
+                var res;
+                function array_operation(a,b,op){
+                    var res = [];
+                    if( Array.isArray(a)
+                        && Array.isArray(b) ){
+                        if(a.length == b.length){
+                            res = a.map(function(v,i,arr){
+                                return op(v,b[i]);
+                            });
+                        } else {
+                            root.happy_accident(
+                                id,
+                                "The arrays do not " +
+                                    " have the same size"
+                            );
+                            res = [];
+                        }
+                    } else if(Array.isArray(a)) {
+                        res = a.map(function(v,i,arr){
+                            return op(v,b);
+                        });
+                    } else {
+                        res = op(a,b);
+                    }
+                    return res;
+                }
+
+                switch(settings.operation){
+                case "+":
+                    res = array_operation(a,b,function(a,b){
+                        return a + b;
+                    });
+                    break;
+                case "-":
+                    res = array_operation(a,b,function(a,b){
+                        return a - b;
+                    });
+                    break;
+                case "*":
+                    res = array_operation(a,b,function(a,b){
+                        return a * b;
+                    });
+                    break;
+                case "exponent":
+                    res = array_operation(a,b,function(a,b){
+                        return Math.pow(a,b);
+                    });
+                    break;
+                case "modulo":
+                    res = array_operation(a,b,function(a,b){
+                        return a % b;
+                    });
+                    break;
+                case "÷":
+                    res = array_operation(a,b,function(a,b){
+                        return a / b;
+                    });
+                    break;
+                }
+                self.result = [res];
+            }
+        },
         "Note": {
             inputs: [],
             outputs: [],
