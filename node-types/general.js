@@ -32,6 +32,50 @@ function general_node_types(root){
 
             },
         },
+        "limit values": {
+            inputs: ["array"],
+            outputs: ["array"],
+            icon: "fa-square-o",
+            title_info: "Floor/ceil values",
+            info: "Floor or ceil a value or a whole 1D array",
+            settings: {
+                "min":{
+                    type: "float",
+                    value: ""
+                },
+                "max":{
+                    type: "float",
+                    value: ""
+                }
+            },
+            calculate: function(nodes,id){
+                var self = nodes[id];
+                var has_min = min != "";
+                var has_max = max != "";
+                var min = parseFloat(self.settings['min']);
+                var max = parseFloat(self.settings['max']);
+                var res = root.get_input_result(nodes,id);
+                var arr = deep_copy(res[0]);
+                
+                function limit(val){
+                    if(has_min && val < min){
+                        val = min;
+                    } else if (has_max && val > max){
+                        val = max;
+                    }
+                    return val;
+                }
+                
+                if(Array.isArray(arr)){
+                    for(var i = 0; i < arr.length; i++){
+                        arr[i] = limit(arr[i]);
+                    }
+                } else {
+                    arr = limit(arr);
+                }
+                self.result = [arr];
+            }
+        },
         "operation": {
             inputs: ["array","array or number"],
             outputs: ["output"],
@@ -70,6 +114,10 @@ function general_node_types(root){
                     } else if(Array.isArray(a)) {
                         res = a.map(function(v,i,arr){
                             return op(v,b);
+                        });
+                    } else if(Array.isArray(b)) {
+                        res = b.map(function(v,i,arr){
+                            return op(a,v);
                         });
                     } else {
                         res = op(a,b);
