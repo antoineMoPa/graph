@@ -44,6 +44,14 @@ function viz_node_types(root){
 
         var min_x = d3.min(xs);
         var min_y = d3.min(ys);
+
+        if(min_x > 0){
+            min_x = 0;
+        }
+        if(min_y > 0){
+            min_y = 0;
+        }
+        
         var max_x = d3.max(xs);
         var max_y = d3.max(ys);
         var data = d3.zip(xs,ys);
@@ -94,15 +102,16 @@ function viz_node_types(root){
             .append("rect")
             .attr("width",bar_width)
             .attr("height",function(d){
-                if(min_y >= 0){
-                    return y_s(max_y - (d[1] - min_y));
+                // no height
+                if(d[1] == 0){
+                    return 0;
                 }
+                // goes above axis
                 if(d[1] > 0){
                     return y_s(max_y - d[1]);
-                } else {
-                    return y_s(d[1] + max_y);
                 }
-                
+                // goes below axis
+                return y_s(d[1] + max_y);
             });
         
         // create axes
