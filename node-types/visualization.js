@@ -45,9 +45,6 @@ function viz_node_types(root){
         var min_x = d3.min(xs);
         var min_y = d3.min(ys);
 
-        if(min_x > 0){
-            min_x = 0;
-        }
         if(min_y > 0){
             min_y = 0;
         }
