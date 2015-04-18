@@ -35,10 +35,9 @@ function viz_node_types(root){
         },
     };
 
-    
     function graph(node,res,settings){
-        var xs = res[0];
-        var ys = res[1];
+        var xs = res[0] || [];
+        var ys = res[1] || [];
         var wrapper = d3.select(node)
             .select(".chart svg");
 
