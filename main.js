@@ -227,10 +227,15 @@ function new_graph(container){
         var html = get_html("node-ui");
         var dom = create_dom("div",html);
         var node = dom.children[0];
-        SQSA(node,".node-header")[0]
-            .innerHTML = type;
+        var header = SQSA(node,".node-header")[0];
+        var delete_button = SQSA(node,".delete-node")[0];
+        delete_button.onclick = function(){
+            var id = node.getAttribute("data-node-id");
+            remove_node(id);
+        };
+        header.innerHTML = type;
+        var sys = node_systems[system][type];
         var content = SQSA(node,"content")[0];
-        
         nodes.appendChild(
             node
         );
@@ -530,6 +535,7 @@ function new_graph(container){
         removed_ids.push(id);
         sheet.nodes[id] = false;
         clear_references_to_node(id);
+        draw_links();
     }
 
     function clear_references_to_node(id){
