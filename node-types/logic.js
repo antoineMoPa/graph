@@ -70,7 +70,7 @@ function logic_node_types(root){
                     res = (a ? !b : b);
                     break;
                 }
-                self.result[res];
+                self.result = [res];
             }
         },
         "if switch": {
