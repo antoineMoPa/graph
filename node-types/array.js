@@ -105,7 +105,7 @@ function array_node_types(root){
                 var self = nodes[id];
                 var name = self.settings["function"];
                 var res = root.get_input_result(nodes,id);
-                var arr = res[0];
+                var arr = deep_copy(res[0]);
                 for(var i = 0, l = arr.length; i < l;i++){
                     var end = root.bnr
                         .run_function(
