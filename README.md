@@ -12,7 +12,7 @@ Let's say you want to add a node type in the "Array" category. First open `/node
     "epic stuff": {
         inputs: ["array"],    /* name your inputs and outputs */
         outputs: ["array"],
-        icon: "fa-cogs",
+        icon: "",
         title_info: "html title of the menu element",
         info: "Informative text that shows up in your node",
         settings: {
