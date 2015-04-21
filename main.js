@@ -485,7 +485,7 @@ function new_graph(container){
                 init_add_button(dom,i,j);
 
                 // Add happy little font-awesome icons
-                if(nt.icon != undefined){
+                if(nt.icon != undefined && nt.icon != ""){
                     prepend_fa_icon(dom,nt.icon);
                 }
             }
