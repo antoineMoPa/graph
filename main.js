@@ -28,6 +28,7 @@ function new_graph(container){
                 web: web_node_types(root),
                 flow: flow_node_types(root),
                 number: number_node_types(root),
+                logic: logic_node_types(root),
                 array: array_node_types(root),
                 visualization: viz_node_types(root)
             }
