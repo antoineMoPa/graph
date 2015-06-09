@@ -1,6 +1,8 @@
 function spectrum_node_types(root){
     var root = root;
     var cie_data = null;
+    var lspdd_lamps = {};
+    var lspdd_url = "http://galileo.graphycs.cegepsherbrooke.qc.ca/app/en/lamps/#ID#.json"
     var types = {
         "spectrum output": {
             inputs: ["wavelength","intensity"],
@@ -71,6 +73,7 @@ function spectrum_node_types(root){
                 }
                 
             },
+
             settings: {
                 "data": {
                     type: "either",
@@ -82,6 +85,54 @@ function spectrum_node_types(root){
                         "S0","S1","S2"
                     ],
                     value: "D65"
+                }
+            }
+        },
+        "LSPDD lamp spectrum": {
+            inputs: [],
+            info: "CIE data",
+            outputs: ["wavelength","intensity"],
+            icon: "fa-lightbulb-o",
+            oncreate: function(node,id){
+                var node = root.node_for_id(id);
+                var div = create_dom("div","");
+            },
+            onresult: function(nodes,id){
+                var node = root.node_for_id(id);
+                var self = nodes[id];
+                var res = root.get_input_result(nodes,id);
+            },
+            calculate: function(nodes,id,callback){
+                var self = nodes[id];
+                var lamp_id = self.settings['lamp id'];
+                
+                // Find CIE data if it is not yet cached
+                if(lspdd_lamps[lamp_id] == null){
+                    // We send a callback executed after data is found
+                    fetch_lspdd_lamp(lamp_id, calculate_lspdd_lamp);
+                } else {
+                    // Data is already cached in cie_data
+                    // jump to function
+                    calculate_lspdd_lamp();
+                }
+                
+                function calculate_lspdd_lamp(){
+                    var lamp = lspdd_lamps[lamp_id];
+                    var spectrum = lamp["spectraldata"];
+                    var wavelengths = spectrum["wavelength"];
+                    var intensities = spectrum["relativeIntensity"];
+                    
+                    self.results = [wavelengths,intensities];
+                    // Hey node runner, there are results !
+                    callback();
+                }
+                
+            },
+
+            settings: {
+                "lamp_id": {
+                    type: "string",
+                    value: "2469"
                 }
             }
         }
@@ -122,10 +173,24 @@ function spectrum_node_types(root){
                 }
             });
             callback();
+        })        
+    }
+
+    /*
+      Find a lamp in the Lamp Spectral Power Distribution Database
+     */
+    function fetch_lspdd_lamp(lamp_id,callback){
+        var url = lspdd_url.replace("#id#",lamp_id);
+        // Get the data through a GET http request
+        ajax.get(url,function(data){
+            console.log(data);
+            lspdd_lamps[lamp_id] = JSON.parse(data);
+            // Hey we found the lamp!
+            callback();
         })
         
     }
-    
+
     
     function graph(node,res,settings){
         var xs = res[0] || [];
