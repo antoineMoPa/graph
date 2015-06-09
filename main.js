@@ -30,7 +30,8 @@ function new_graph(container){
                 number: number_node_types(root),
                 logic: logic_node_types(root),
                 array: array_node_types(root),
-                visualization: viz_node_types(root)
+                visualization: viz_node_types(root),
+                spectrum: spectrum_node_types(root)
             }
         init_bnr(root);
         sheet = new_sheet();
@@ -50,7 +51,7 @@ function new_graph(container){
 
     var nodes = container
         .querySelectorAll(".nodes")[0];
-
+    
     function resize(){
         w = canvas.width = container.clientWidth;
         h = canvas.height = container.clientHeight;
