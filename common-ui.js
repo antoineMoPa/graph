@@ -125,9 +125,21 @@ function close_menu_panels(){
     }
 }
 
+function listen_keycode(keycode,callback){
+    // create shortcut var
+    var kcc = window.keyboard.keycode_callbacks;
+    // Create array if not exist
+    if(kcc[keycode] == undefined){
+        kcc[keycode] = [];
+    }
+    // add event listener
+    kcc[keycode].push(callback);
+}
+
 function init_keyboard(){
     window.keyboard = {};
     keyboard.callbacks = [];
+    keyboard.keycode_callbacks = [];
     window.keyboard.keys = {};
 
     window.listen_key = function(key){
@@ -138,8 +150,16 @@ function init_keyboard(){
 
     document.onkeydown = function(e){
         str = String.fromCharCode(e.keyCode);
-        for(var callback in keyboard.callbacks){
-            keyboard.callbacks[callback](e);
+        // Sorry for this short var name
+        // kc stands for  keyboardcallback
+        var kc = keyboard.callbacks[str];
+        for(var callback in kc){
+            kc[callback](e);
+        }
+        // kcc stands for  keycodecallback
+        var kcc = keyboard.keycode_callbacks[e.keyCode];
+        for(var callback in kcc){
+            kcc[callback](e);
         }
         set_current_key(e,true);
     };

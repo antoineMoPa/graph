@@ -48,7 +48,8 @@ function new_graph(container){
     init_add_menu();
     init_panels_ui();
     init_keyboard();
-
+    enable_move_sheet();
+    
     var nodes = container
         .querySelectorAll(".nodes")[0];
     
@@ -590,6 +591,40 @@ function new_graph(container){
         el.style.top = pos[1] + "px";
     }
 
+    function move_all_nodes(nodes,left,top){
+        for(var i = 0; i < nodes.length; i++){
+            if(nodes[i] == false){
+                continue;
+            }
+            set_node_position(
+                i,
+                nodes[i].left + left,
+                nodes[i].top + top
+            );
+        }
+        draw_links();
+        save_to_localstorage();
+    }
+    
+    function enable_move_sheet(){
+        // move up
+        listen_keycode(38,function(e){
+            move_all_nodes(sheet.nodes,0,-10);
+        });
+        // right
+        listen_keycode(39,function(e){
+            move_all_nodes(sheet.nodes,10,0);
+        });
+        // down
+        listen_keycode(40,function(e){
+            move_all_nodes(sheet.nodes,0,10);
+        });
+        // left
+        listen_keycode(37,function(e){
+            move_all_nodes(sheet.nodes,-10,0);
+        });
+    }
+    
     function enable_global_drag(){
         var last_update = new Date().getTime();
 
@@ -615,20 +650,30 @@ function new_graph(container){
             if(dragging != null){
                 var id = dragging
                     .getAttribute("data-node-id");
-                sheet.nodes[id].top =
-                    parseInt(dragging.style.top);
-                sheet.nodes[id].left =
-                    parseInt(dragging.style.left);
-
+                set_node_position(id);
                 save_to_localstorage();
             }
             dragging = null;
         }
-
+        
         window.addEventListener("mousemove",mousemove);
         window.addEventListener("mouseup",mouseup);
     }
 
+    function set_node_position(id,left,top){
+        var node_dom_el = get_node(id);
+        if(left == undefined){
+            left = node_dom_el.style.left;
+        }
+        if(top == undefined){
+            top = node_dom_el.style.top;
+        }
+        set_el_pos(node_dom_el,[left,top]);
+        sheet.nodes[id].left = parseInt(left);
+        sheet.nodes[id].top = parseInt(top);
+
+    }
+    
     function draw_links(){
         ctx.clearRect(0,0,w,h);
         var nodes = sheet.nodes;
