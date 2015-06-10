@@ -607,21 +607,38 @@ function new_graph(container){
     }
     
     function enable_move_sheet(){
+        var last_move = new Date().getTime();
+        /*
+          Nice move function distance
+          that depends on time since last move
+          
+          Improvement idea: make it depend on key
+          
+         */
+        function move_dist(){
+            var current_move = new Date().getTime();
+            // I found this value friendly
+            var factor = 1000;
+            // Value that depends on last click
+            var add = factor * 1/(current_move - last_move);
+            last_move = current_move;
+            return add;
+        }
         // move up
         listen_keycode(38,function(e){
-            move_all_nodes(sheet.nodes,0,-10);
+            move_all_nodes(sheet.nodes,0,move_dist());
         });
         // right
         listen_keycode(39,function(e){
-            move_all_nodes(sheet.nodes,10,0);
+            move_all_nodes(sheet.nodes,-move_dist(),0);
         });
         // down
         listen_keycode(40,function(e){
-            move_all_nodes(sheet.nodes,0,10);
+            move_all_nodes(sheet.nodes,0,-move_dist());
         });
         // left
         listen_keycode(37,function(e){
-            move_all_nodes(sheet.nodes,-10,0);
+            move_all_nodes(sheet.nodes,move_dist(),0);
         });
     }
     
