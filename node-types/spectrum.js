@@ -2,7 +2,13 @@ function spectrum_node_types(root){
     var root = root;
     var cie_data = null;
     var lspdd_lamps = {};
-    var lspdd_url = "http://galileo.graphycs.cegepsherbrooke.qc.ca/app/en/lamps/#ID#.json"
+    // Build proxy url
+    var hostname = window.location.hostname;
+    var protocol = window.location.protocol + "//";
+    var lspdd_url = protocol
+        + hostname +
+        ":8001/lspdd?lamp_id=#ID#";
+
     var types = {
         "spectrum output": {
             inputs: ["wavelength","intensity"],
@@ -104,31 +110,51 @@ function spectrum_node_types(root){
             },
             calculate: function(nodes,id,callback){
                 var self = nodes[id];
-                var lamp_id = self.settings['lamp id'];
-                
-                // Find CIE data if it is not yet cached
+                var lamp_id = self.settings['lamp_id'];
+                // Find lamp data if it is not yet cached
                 if(lspdd_lamps[lamp_id] == null){
-                    // We send a callback executed after data is found
+                    // We send a callback
+                    // executed after data is found
                     fetch_lspdd_lamp(lamp_id, calculate_lspdd_lamp);
                 } else {
                     // Data is already cached in cie_data
                     // jump to function
                     calculate_lspdd_lamp();
                 }
-                
                 function calculate_lspdd_lamp(){
                     var lamp = lspdd_lamps[lamp_id];
-                    var spectrum = lamp["spectraldata"];
-                    var wavelengths = spectrum["wavelength"];
-                    var intensities = spectrum["relativeIntensity"];
-                    
-                    self.results = [wavelengths,intensities];
+                    var spectrum_str = lamp["spectraldata"];
+                    var spectrum = d3.csv
+                        .parse(spectrum_str);
+                    var wavelengths = [];
+                    var intensities = [];
+
+                    // Separate columns
+                    // into 2 arrays
+                    spectrum.map(function(d){
+                        var w = parseFloat(
+                            d.wavelength
+                        )
+                        var i = parseFloat(
+                            d.relativeIntensity
+                        );
+                        // Is the value valid
+                        if(!isNaN(i)){
+                            wavelengths.push(w);
+                            intensities.push(i);
+                        } else {
+                            // Some spectras have NaN
+                            // values at the end
+                            // Just stop when it happens
+                            // d3.js will send less annoying warnings
+                            return -1;
+                        }
+                    });
+                    self.result = [wavelengths,intensities];
                     // Hey node runner, there are results !
                     callback();
                 }
-                
             },
-
             settings: {
                 "lamp_id": {
                     type: "string",
@@ -180,10 +206,9 @@ function spectrum_node_types(root){
       Find a lamp in the Lamp Spectral Power Distribution Database
      */
     function fetch_lspdd_lamp(lamp_id,callback){
-        var url = lspdd_url.replace("#id#",lamp_id);
+        var url = lspdd_url.replace("#ID#",lamp_id);
         // Get the data through a GET http request
         ajax.get(url,function(data){
-            console.log(data);
             lspdd_lamps[lamp_id] = JSON.parse(data);
             // Hey we found the lamp!
             callback();
