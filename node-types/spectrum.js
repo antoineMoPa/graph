@@ -225,7 +225,16 @@ function spectrum_node_types(root){
         
     }
 
-    
+    /*
+     
+      Improvements:
+      Approximate rgb color for wavelength
+      Axis title
+      Multi input spectrum
+      Not calculate before 300 ms to avoid UI lock
+      Temporary/loading image 
+      
+     */
     function spectrum_plot(node,res,settings){
         var xs = res[0] || [];
         var ys = res[1] || [];
