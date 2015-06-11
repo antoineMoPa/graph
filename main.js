@@ -1,59 +1,88 @@
+// This will store many parts
+// of the graph app
+var root = {};
+
 /* LOAD ALL ASSETS */
 (function(){
-    var css_files = [
-        "common-ui.css",
-        "lib/Font-Awesome/css/font-awesome.min.css",
-        "graph.css",
-        "node-types/number.css",
-        "node-types/visualization.css"
-    ];
+    var base_path = window.GRAPH_BASE_PATH;
+    /* Load script that will load other scripts */ 
+    var script = document.createElement("script");
+    script.setAttribute("src",base_path + "network.js");
+    script.onload = load_scipts_css;
+    document.head.appendChild(script);
     
-    var js_scripts = [
-        "common-ui.js",
-        "network.js",
-        "bnr.js",
-        "node-types/general.js",
-        "node-types/web.js",
-        "node-types/logic.js",
-        "node-types/flow.js",
-        "node-types/number.js",
-        "node-types/visualization.js",
-        "node-types/spectrum.js",
-        "lib/d3/d3.min.js",
-        "node-types/array.js",
-        "default-sheet.js"
-    ];
+    function load_scipts_css(){
+        /* So now we have some ajax functions 
+           (ajax.load_stylesheets, etc.) */
+        var css_files = [
+            "common-ui.css",
+            "lib/Font-Awesome/css/font-awesome.min.css",
+            "graph.css",
+            "node-types/number.css",
+            "node-types/visualization.css"
+        ];
+        
+        var js_scripts = [
+            "common-ui.js",
+            "bnr.js",
+            "node-types/general.js",
+            "node-types/web.js",
+            "node-types/logic.js",
+            "node-types/flow.js",
+            "node-types/number.js",
+            "node-types/visualization.js",
+            "node-types/spectrum.js",
+            "lib/d3/d3.min.js",
+            "node-types/array.js",
+            "default-sheet.js"
+        ];
 
-    var components_url = "components.html";
-
-    // Add some CSS to the soup
-    ajax.load_stylesheets(css_files);
-
-    // Put some JS in
-    ajax.load_scripts(js_scripts,function(){
-        // Load form parts, UI elements, etc.
-        load_components(components_url,function(){
-            new_graph(QSA(".big-graph")[0]);
-            run_tests();
+        /* Add the base path to the scripts & css */
+        for(var i in js_scripts){
+            js_scripts[i] = base_path + js_scripts[i];
+        }
+        for(var i in css_files){
+            css_files[i] = base_path + css_files[i];
+        }
+        
+        var components_url = base_path + "components.html";
+        
+        // Add some CSS to the soup
+        ajax.load_stylesheets(css_files);
+        
+        // Put some JS in
+        ajax.load_scripts(js_scripts,function(){
+            // Load form parts, UI elements, etc.
+            load_components(components_url,function(){
+                // Select all graphs
+                var graphs = QSA(".big-graph, .graph-embed");
+                // Enable them
+                root.new_graphs(graphs);
+                // Run some tests
+                run_tests();
+            });
         });
-    });
-    
-    function load_components(url,callback){
-        // Create a container where to put the scripts
-        var container = document.createElement("div");
-        // Get data through the Interwebs with ajax
-        ajax.get(url,function(data){
-            container.innerHTML = data;
-            document.body.appendChild(container);
-            callback();
-        });
-    }    
+        
+        function load_components(url,callback){
+            // Create a container where to put the scripts
+            var container = document.createElement("div");
+            // Get data through the Interwebs with ajax
+            ajax.get(url,function(data){
+                container.innerHTML = data;
+                document.body.appendChild(container);
+                callback();
+            });
+        }
+    }
 })();
 
-var root;
+root.new_graphs = function(containers){
+    for(var i = 0; i < containers.length; i++){
+        root.new_graph(containers[i]);
+    }
+};
 
-
-function new_graph(container){
+root.new_graph = function(container){
     var node_systems;
     var dragging;
     var canvas = null;
@@ -90,8 +119,16 @@ function new_graph(container){
         root.sheet = sheet;
         dragging = null;
     }
-    
-    container.innerHTML = graph_ui();
+
+    function init_ui_dom(){
+        container.innerHTML =
+            get_html("graph-ui") +
+            get_html("graph-canvas-ui");
+        
+    }
+
+    add_class(container,"graph-ui-container");
+    init_ui_dom();
     canvas = SQSA(container,"canvas")[0];
     ctx = canvas.getContext("2d");
     enable_global_drag();
@@ -385,8 +422,8 @@ function new_graph(container){
         this.style.background = "#fb3";
     }
 
-    function graph_ui(){
-        return get_html("graph-ui");
+    function graph_canvas_ui(){
+        return get_html("graph-canvas-ui");
     }
 
     function new_sheet(){
@@ -427,7 +464,7 @@ function new_graph(container){
     
     function init_board_menu(){
         var menu = QSA(".menu-panel-board")[0];
-
+        
         var actions = [
             {
                 name: "Save",
@@ -677,18 +714,22 @@ function new_graph(container){
         }
         // move up
         listen_keycode(38,function(e){
+            e.preventDefault();
             move_all_nodes(sheet.nodes,0,move_dist());
         });
         // right
         listen_keycode(39,function(e){
+            e.preventDefault();
             move_all_nodes(sheet.nodes,-move_dist(),0);
         });
         // down
         listen_keycode(40,function(e){
+            e.preventDefault()
             move_all_nodes(sheet.nodes,0,-move_dist());
         });
         // left
         listen_keycode(37,function(e){
+            e.preventDefault();
             move_all_nodes(sheet.nodes,move_dist(),0);
         });
     }

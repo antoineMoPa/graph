@@ -248,3 +248,8 @@ happyerror{
     font-weight:600;
     cursor:pointer;
 }
+
+.graph-ui-container{
+    position:relative;
+    overflow-y:auto;
+}
