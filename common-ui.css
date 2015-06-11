@@ -2,21 +2,19 @@
 action,a{
     transition:all 0.3s;
 }
-html{
-    height:100%;
-}
-body{
-    height:100%;
-    margin:0;
-    background:#bbb;
+
+.graph-ui-container {
     font-family:'Open Sans',sans-serif,Arial;
 }
 
-h1,h2,h3,h4{
+.graph-ui-container h1,
+.graph-ui-container h2,
+.graph-ui-container h3,
+.graph-ui-container h4{
     font-weight:300;
 }
 
-h1{
+.graph-ui-container h1{
     z-index:-1;
     text-align:center;
     text-transform:uppercase;
@@ -30,30 +28,32 @@ h1{
     1px 0 0 #333,
     2px 0 0 #333;
 }
-h3,h4{
+
+.graph-ui-container h3,
+.graph-ui-container h4{
     margin: 5px 0;
 }
 
-.actions{
+.graph-ui-container .actions{
     background:#fff;
     width:480px;
     margin:auto;
     padding:10px;
 }
-.clear{
+.graph-ui-container .clear{
     clear:both;
 }
-.inline-block{
+.graph-ui-container .inline-block{
     display:inline-block;
     vertical-align:top;
 }
-.side-panel.left{
+.graph-ui-container .side-panel.left{
     left:0;
 }
-.side-panel.right{
+.graph-ui-container .side-panel.right{
     right:0;
 }
-tabtitle{
+.graph-ui-container tabtitle{
     background:#bbb;
     line-height:50px;
     height:50px;
@@ -62,43 +62,52 @@ tabtitle{
     padding:0 8px;
     opacity:0.8;
 }
-tab{
+.graph-ui-container tab{
     padding:15px;
     text-align:left;
 }
-tabtitle.active{
+.graph-ui-container tabtitle.active{
     background:#fff;
     color:#000;
     opacity:1;
 }
-.btn:hover,
-.btn:active,
-action:active,
-action:hover{
+.graph-ui-container .btn:hover,
+.graph-ui-container .btn:active,
+.graph-ui-container action:active,
+.graph-ui-container action:hover{
     background:#18d;
 }
-tabtitles{
+
+.graph-ui-container tabtitles{
     background:#eee;
     display:block;
 }
 
-text-left,text-center,text-right{
+.graph-ui-container text-left,
+.graph-ui-container text-center,
+.graph-ui-container text-right{
     display:block;
 }
 
-text-left, .text-left{
+.graph-ui-container text-left,
+.graph-ui-container .text-left{
     text-align: left;
 }
-text-center, .text-center{
+.graph-ui-container text-center,
+.graph-ui-container .text-center{
     text-align: center;
 }
-text-right, .text-right{
+
+.graph-ui-container text-right,
+.graph-ui-container .text-right{
     text-align: right;
 }
-.actions action{
+.graph-ui-container .actions action{
     margin:0;
 }
-.btn,switchoption,action{
+.graph-ui-container .btn,
+.graph-ui-container switchoption,
+.graph-ui-container action{
     cursor:pointer;
     color:#fff;
     background:#3af;
@@ -108,25 +117,25 @@ text-right, .text-right{
     line-height: 21px;
     font-size: 14px;
 }
-action,
-tabtitles,
-switch
+.graph-ui-container action,
+.graph-ui-container tabtitles,
+.graph-ui-container switch
     {
         user-select:none;
         -moz-user-select:none;
     }
-switch{
+.graph-ui-container switch{
     display:block;
     margin:0 10px 0 0;
 }
-switchoption{
+.graph-ui-container switchoption{
     margin:5px 0;
 }
-switchoption:not(.active){
+.graph-ui-container switchoption:not(.active){
     color:#666;
     background:#eee;
 }
-input{
+.graph-ui-container input{
     border-radius:0;
     background:#ddd;
     border:none;
@@ -136,30 +145,30 @@ input{
     margin: 3px 10px 0 0;
     max-width:90%;
 }
-half-width{
+.graph-ui-container half-width{
     display:inline-block;
     width:49%;
 }
-label{
+.graph-ui-container label{
     font-size:13px;
 }
 
-tab{
+.graph-ui-container tab{
     display:none;
 }
 
-tab.active{
+.graph-ui-container tab.active{
     display:block;
 }
 
-.hide{
+.graph-ui-container .hide{
     position:absolute;
     left:-3700px;
 }
-label{
+.graph-ui-container label{
     display:block;
 }
-select{
+.graph-ui-container select{
     margin-left:10px;
     margin-right:10px;
     width:100%; /* remove this when calc is a standard */
@@ -167,7 +176,7 @@ select{
     border:none;
     background:#ddd;
 }
-textarea{
+.graph-ui-container textarea{
     border:0;
     background:#ddd;
     max-width:100%;

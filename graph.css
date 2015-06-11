@@ -1,13 +1,8 @@
-*{
+.graph-ui-container *{
     margin:0;
 }
 
-html,body{
-    width:100%;
-    height:100%;
-}
-
-.no-select{
+.graph-ui-container .no-select{
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -16,7 +11,7 @@ html,body{
     user-select: none;
 }
 
-.menubar{
+.graph-ui-container .menubar{
     width:100%;
     height:50px;
     background:#fafafa;
@@ -27,15 +22,15 @@ html,body{
     z-index:2;
 }
 
-.menubar:hover{
+.graph-ui-container .menubar:hover{
     opacity:1;
 }
 
-.graph{
+.graph-ui-container .graph{
     z-index:1;
 }
 
-.menubar .button{
+.graph-ui-container .menubar .button{
     display:inline-block;
     padding:0 10px;
     font-size:15px;   /*(/ (/ 50 2) 1.61)*/
@@ -45,11 +40,11 @@ html,body{
     font-family:sans-serif;
 }
 
-.menubar .button:hover{
+.graph-ui-container .menubar .button:hover{
     background:#f5f5f5;
 }
 
-.menu-panel{
+.graph-ui-container .menu-panel{
     background:#fefefe;
     position:absolute;
     top:50px;
@@ -58,32 +53,32 @@ html,body{
     z-index:2;
 }
 
-subpanel{
+.graph-ui-container subpanel{
     display:inline-block;
     vertical-align:top;
     width:200px;
 }
 
-.menu-panel-displayed{
+.graph-ui-container .menu-panel-displayed{
     display:block;
 }
 
-.menu-panel action{
+.graph-ui-container .menu-panel action{
     display:block;
     margin:5px;
 }
 
-label{
+.graph-ui-container label{
     margin-left:10px;
     font-weight:600;
 }
 
-subpanel h3{
+.graph-ui-container subpanel h3{
     font-weight:300;
     text-transform:capitalize;
     line-height: 37px;
 }
-.graph{
+.graph-ui-container .graph{
     font-family:sans-serif;
 	background:#333;
 	width:100%;
@@ -94,7 +89,7 @@ subpanel h3{
     overflow:hidden;
 }
 
-.node{
+.graph-ui-container .node{
     background:#fff;
     width:200px;
     min-height:95px;
@@ -102,16 +97,16 @@ subpanel h3{
     border-radius:4px;
 }
 
-.node content{
+.graph-ui-container .node content{
     overflow:hidden;
 }
 
-content{
+.graph-ui-container content{
     display:block;
     margin:10px;
 }
 
-.node-header{
+.graph-ui-container .node-header{
     height:35px;
     text-align:center;
     line-height:35px;
@@ -126,7 +121,7 @@ content{
     text-transform:capitalize;
 }
 
-.delete-node{
+.graph-ui-container .delete-node{
     position:absolute;
     top:0px;
     right:7px;
@@ -137,11 +132,11 @@ content{
     cursor:pointer;
 }
 
-.delete-node:hover{
+.graph-ui-container .delete-node:hover{
     color:#333;
 }
 
-.node-header{
+.graph-ui-container .node-header{
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -150,8 +145,8 @@ content{
     user-select: none;
 }
 
-.node-input,
-.node-output{
+.graph-ui-container .node-input,
+.graph-ui-container .node-output{
     width:15px;
     height:15px;
     position:absolute;
@@ -160,46 +155,46 @@ content{
     cursor:pointer;
 }
 
-.node-input{
+.graph-ui-container .node-input{
     left:-7px;
 }
 
-.node-output{
+.graph-ui-container .node-output{
     right:-7px;
 }
 
-.output-selected,
-.input-selected{
+.graph-ui-container .output-selected,
+.graph-ui-container .input-selected{
    background:#FFc532;
 }
 
-.node-input:nth-child(1),
-.node-output:nth-child(1){
+.graph-ui-container .node-input:nth-child(1),
+.graph-ui-container .node-output:nth-child(1){
     top:40px;
 }
-.node-input:nth-child(2),
-.node-output:nth-child(2){
+.graph-ui-container .node-input:nth-child(2),
+.graph-ui-container .node-output:nth-child(2){
     top:60px;
 }
-.node-input:nth-child(3),
-.node-output:nth-child(3){
+.graph-ui-container .node-input:nth-child(3),
+.graph-ui-container .node-output:nth-child(3){
     top:80px;
 }
-.node-input:nth-child(4),
-.node-output:nth-child(4){
+.graph-ui-container .node-input:nth-child(4),
+.graph-ui-container .node-output:nth-child(4){
     top:100px;
 }
-.node-input:nth-child(5),
-.node-output:nth-child(5){
+.graph-ui-container .node-input:nth-child(5),
+.graph-ui-container .node-output:nth-child(5){
     top:120px;
 }
 
-h3{
+.graph-ui-container h3{
     font-weight:400;
     padding:0 4px;
 }
 
-input{
+.graph-ui-container input{
     border:none;
     max-width:85%;
     background:#ddd;
@@ -207,31 +202,31 @@ input{
     padding:3px;
 }
 
-nodes{
+.graph-ui-container nodes{
     width:100%;
     height:100%;
 }
 
-label{
+label{.graph-ui-container 
     margin-bottom:5px;
 }
 
-.node content p,
-.node happyerror{
+.graph-ui-container .node content p,
+.graph-ui-container .node happyerror{
     font-size:13px;
     margin:10px;
 }
 
-happyerror{
+.graph-ui-container happyerror{
     display:block;
     color:#f53;
 }
 
-.menu-panels .fa{
+.graph-ui-container .menu-panels .fa{
     margin-right:5px;
 }
 
-.data-popup{
+.graph-ui-container .data-popup{
     position:absolute;
     background:#fff;
     min-height:400px;
@@ -244,7 +239,7 @@ happyerror{
     box-shadow: 0 0 5px #777 inset;
 }
 
-.close-button{
+.graph-ui-container .close-button{
     font-weight:600;
     cursor:pointer;
 }
