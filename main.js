@@ -1,66 +1,57 @@
 /* LOAD ALL ASSETS */
-var css_files = [
-    "common-ui.css",
-    "lib/Font-Awesome/css/font-awesome.min.css",
-    "graph.css",
-    "node-types/number.css",
-    "node-types/visualization.css"
-];
+(function(){
+    var css_files = [
+        "common-ui.css",
+        "lib/Font-Awesome/css/font-awesome.min.css",
+        "graph.css",
+        "node-types/number.css",
+        "node-types/visualization.css"
+    ];
+    
+    var js_scripts = [
+        "common-ui.js",
+        "network.js",
+        "bnr.js",
+        "node-types/general.js",
+        "node-types/web.js",
+        "node-types/logic.js",
+        "node-types/flow.js",
+        "node-types/number.js",
+        "node-types/visualization.js",
+        "node-types/spectrum.js",
+        "lib/d3/d3.min.js",
+        "node-types/array.js",
+        "default-sheet.js"
+    ];
 
-var js_scripts = [
-    "common-ui.js",
-    "network.js",
-    "bnr.js",
-    "node-types/general.js",
-    "node-types/web.js",
-    "node-types/logic.js",
-    "node-types/flow.js",
-    "node-types/number.js",
-    "node-types/visualization.js",
-    "node-types/spectrum.js",
-    "lib/d3/d3.min.js",
-    "node-types/array.js",
-    "default-sheet.js"
-];
+    var components_url = "components.html";
 
-load_stylesheets(css_files);
-load_scripts(js_scripts,function(){
-    new_graph(QSA(".big-graph")[0]);
-    run_tests();
-});
+    // Add some CSS to the soup
+    ajax.load_stylesheets(css_files);
+
+    // Put some JS in
+    ajax.load_scripts(js_scripts,function(){
+        // Load form parts, UI elements, etc.
+        load_components(components_url,function(){
+            new_graph(QSA(".big-graph")[0]);
+            run_tests();
+        });
+    });
+    
+    function load_components(url,callback){
+        // Create a container where to put the scripts
+        var container = document.createElement("div");
+        // Get data through the Interwebs with ajax
+        ajax.get(url,function(data){
+            container.innerHTML = data;
+            document.body.appendChild(container);
+            callback();
+        });
+    }    
+})();
 
 var root;
 
-function load_stylesheets(urls){    
-    for(var i = 0; i < urls.length; i++){
-        // create a <link> element and add it to head
-        var link = document.createElement("link");
-        link.setAttribute("rel","stylesheet");
-        link.setAttribute("href",urls[i]);
-        document.head.appendChild(link);
-    }
-}
-
-function load_scripts(urls,callback){
-    // Keep track of loaded scripts
-    // When everything is loaded, we call the callback
-    var loaded = 0;
-    function new_loaded(){
-        loaded++;
-        if(loaded == urls.length){
-            callback();
-        }
-    }
-    
-    for(var i = 0; i < urls.length; i++){
-        // create a <script> element and add it to head
-        var script = document.createElement("script");
-        script.setAttribute("type","text/javascript");
-        script.setAttribute("src",urls[i]);
-        script.onload = new_loaded;
-        document.head.appendChild(script);
-    }
-}
 
 function new_graph(container){
     var node_systems;

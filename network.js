@@ -66,3 +66,34 @@ ajax.request = function(data){
         xhr.send();
     }
 }
+
+ajax.load_stylesheets = function(urls){    
+    for(var i = 0; i < urls.length; i++){
+        // create a <link> element and add it to head
+        var link = document.createElement("link");
+        link.setAttribute("rel","stylesheet");
+        link.setAttribute("href",urls[i]);
+        document.head.appendChild(link);
+    }
+};
+
+ajax.load_scripts = function(urls,callback){
+    // Keep track of loaded scripts
+    // When everything is loaded, we call the callback
+    var loaded = 0;
+    function new_loaded(){
+        loaded++;
+        if(loaded == urls.length){
+            callback();
+        }
+    }
+    
+    for(var i = 0; i < urls.length; i++){
+        // create a <script> element and add it to head
+        var script = document.createElement("script");
+        script.setAttribute("type","text/javascript");
+        script.setAttribute("src",urls[i]);
+        script.onload = new_loaded;
+        document.head.appendChild(script);
+    }
+};
