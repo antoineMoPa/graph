@@ -37,4 +37,5 @@ class Proxy_Server(object):
         return str(data)
 
 cherrypy.config.update({'server.socket_port': 8001})
+cherrypy.config.update({'server.socket_host': '0.0.0.0'})
 cherrypy.quickstart(Proxy_Server())
