@@ -1,5 +1,5 @@
-function flow_node_types(root){
-    var root = root;
+function flow_node_types(g_root){
+    var g_root = g_root;
     var output_nodes = [];
 
     var types = {
@@ -16,9 +16,9 @@ function flow_node_types(root){
             },
             calculate: function(nodes,id){
                 var self = nodes[id];
-                var res = root.get_input_result(nodes,id);
-                root.draw_links();
-                var end = root.bnr
+                var res = g_root.get_input_result(nodes,id);
+                g_root.draw_links();
+                var end = g_root.bnr
                     .run_function(
                         nodes,
                         self.settings.name,
@@ -62,7 +62,7 @@ function flow_node_types(root){
             },
             calculate: function(nodes,id){
                 var self = nodes[id];
-                var res = root.get_input_result(nodes,id);
+                var res = g_root.get_input_result(nodes,id);
                 self.result = res;
             }
         }

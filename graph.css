@@ -252,4 +252,5 @@ happyerror{
 .graph-ui-container{
     position:relative;
     overflow-y:auto;
+    margin-bottom:20px;
 }

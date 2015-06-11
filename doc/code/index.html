@@ -36,6 +36,8 @@
 }</pre>
                 <div style="width:30%;height:500px;" class="graph-embed">
                 </div>
+                <div style="width:100%;height:500px;" class="graph-embed">
+                </div>
             </section>
             <section>
                 <h2>Creating Forms For Nodes</h2>
@@ -46,6 +48,13 @@
                 <h3>QSA(selector), SQSA(someElement,selector)</h3>
                 <p>
                     They return an array of DOM elements.<br>
+                </p>
+                <p>
+                    You should also almost always use <strong>SQSA</strong> with g_root.cont in order
+                    to make sure your script <strong>does not interfere</strong> with other instances of graph:<br>
+
+                    <pre>
+var my_elemens = SQSA(g_root.cont,".some-class");</pre>
                     
                     You should limit your use of these to the bare minimum.<br>
                     (Don't select an element twice. Keep a reference to it in memory!)

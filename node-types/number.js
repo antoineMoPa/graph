@@ -1,5 +1,5 @@
-function number_node_types(root){
-    var root = root;
+function number_node_types(g_root){
+    var g_root = g_root;
     var updater_interval = null;
     var updater_time_interval = 0;
     
@@ -45,11 +45,11 @@ function number_node_types(root){
             settings: {
             },
             oncreate: function(node,id){
-                root.output_nodes.push(id);
+                g_root.output_nodes.push(id);
             },
             calculate: function(nodes,id){
                 var self = nodes[id];
-                var inputs = root.get_input_result(nodes,id);
+                var inputs = g_root.get_input_result(nodes,id);
                 if( updater_time_interval != inputs[0] ){
                     updater_time_interval = inputs[0];
                     if( updater_time_interval > 30 ){
@@ -59,7 +59,7 @@ function number_node_types(root){
                         }
                         updater_interval = setInterval(
                             function(){
-                                root.bnr.run(nodes)
+                                g_root.bnr.run(nodes)
                             },
                             updater_time_interval
                         );
@@ -83,7 +83,7 @@ function number_node_types(root){
             },
             calculate: function(nodes,id){
                 var self = nodes[id];
-                var inputs = root.get_input_result(nodes,id);
+                var inputs = g_root.get_input_result(nodes,id);
                 var settings = self.settings;
                 var a = inputs[0];
                 var operation;
@@ -127,15 +127,15 @@ function number_node_types(root){
             settings: {
             },
             oncreate: function(node,id){
-                root.output_nodes.push(id);
+                g_root.output_nodes.push(id);
             },
             calculate: function(nodes,id){
                 var self = nodes[id];
-                var inputs = root.get_input_result(nodes,id);
+                var inputs = g_root.get_input_result(nodes,id);
                 var n_id = parseInt(inputs[0]);
                 var x = inputs[1];
                 var y = inputs[2];
-                var node_dom = root.node_for_id(n_id);
+                var node_dom = g_root.node_for_id(n_id);
                 if( node_dom != undefined
                     && x != undefined
                     && y != undefined
@@ -145,7 +145,7 @@ function number_node_types(root){
                     node_dom.style.top =
                         parseInt(y)+"px";
 
-                    root.draw_links();
+                    g_root.draw_links();
                 }
             },
         },

@@ -15,12 +15,12 @@ header{
 }
 h1,h3,h5{
     font-weight:300;
-    margin-left:-4px;
 }
 h2,h4,h6{
     font-weight:500;
-    margin-left:-6px;
-    
+}
+h1,h2,h3,h4,h5,h6{
+    margin:20px 0;
 }
 .content{
     margin-left:10px;

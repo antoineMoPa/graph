@@ -15,6 +15,9 @@ function QSA(sel){
    Returns elements matching selector withing parent
 */
 function SQSA(el, sel){
+    if(el == undefined){
+        console.log("Selector: " + sel);
+    }
     return el.querySelectorAll(sel);
 }
 
@@ -23,13 +26,6 @@ function SQSA(el, sel){
 */
 function prepend(parent,el){
     parent.insertBefore(el,parent.firstChild);
-}
-
-/**
-   getElementById, but shorter
-*/
-function ID(id){
-    return document.getElementById(id);
 }
 
 function has_class(el,classname){
@@ -68,7 +64,7 @@ function get_html(name){
     var script = QSA("script[name='"+name+"']")[0];
     if(script == undefined){
         console.log(
-            "Error: script '"+name+"' does not exist."
+            "Error: script '" + name + "' does not exist."
         );
         return "";
     }
@@ -97,28 +93,35 @@ function create_dom(tag,content){
     return parent;
 }
 
-function init_panels_ui(){
-    var buttons = QSA(".menubar .button");
+function init_panels_ui(container){
+    var buttons = SQSA(container,".menubar .button");
     for(var i=0; i < buttons.length; i++){
         buttons[i].onclick = function(){
             var id = this.getAttribute("data-panel-id");
-            var panel =  ID(id);
+            var panel = get_panel(id);
             var panelOpened = false;
             if(has_class(panel,"menu-panel-displayed")){
                 panelOpened = true;
             }
 
-            close_menu_panels();
+            close_menu_panels(container);
 
             if(!panelOpened){
                 add_class(panel,"menu-panel-displayed")
             }
         }
     }
+
+    function get_panel(id){
+        return SQSA(
+            container,
+            ".menu-panel[data-panel-id='"+id+"']"
+        )[0];
+    }
 }
 
-function close_menu_panels(){
-    var displayed = QSA(".menu-panel-displayed");
+function close_menu_panels(container){
+    var displayed = SQSA(container,".menu-panel-displayed");
     for(var i = 0; i < displayed.length; i++){
         var el = displayed[i];
         remove_class(el,"menu-panel-displayed");

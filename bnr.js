@@ -5,44 +5,44 @@
    and calls the "calculate" functions and makes sure
    every input is defined before calculating a node.
 */
-function init_bnr(){
-    root.bnr = {};
+function init_bnr(g_root){
+    g_root.bnr = {};
     var functions = {};
 
-    root.bnr.run_function = function(nodes,name,inputs){
+    g_root.bnr.run_function = function(nodes,name,inputs){
         var func = functions[name];
         // set start result from function input
         if(func == undefined){
             return -1;
         } else {
             nodes[func.start].result = inputs;
-            root.bnr.calculate_steps(nodes,func.steps);
+            g_root.bnr.calculate_steps(nodes,func.steps);
             return func.end;
         }
     }
 
-    root.bnr.run = function(nodes){
-        var output_nodes = root.output_nodes;
+    g_root.bnr.run = function(nodes){
+        var output_nodes = g_root.output_nodes;
         // clear past results
         for(var i = 0; i < nodes.length; i++){
             if( nodes[i] != false ){
                 nodes[i].result = undefined;
             }
             if(nodes[i].type == "function end"){
-                root.bnr.define_function(nodes,i);
+                g_root.bnr.define_function(nodes,i);
             }
         }
         for(var i = 0; i < output_nodes.length; i++){
             if(nodes[output_nodes[i]] !== false){
                 // Build tree
-                var tree = root.bnr
+                var tree = g_root.bnr
                     .reverse_tree(nodes,output_nodes[i]);
 
                 // add output node
                 tree.push([output_nodes[i]]);
 
                 // run through steps
-                root.bnr
+                g_root.bnr
                     .calculate_steps(nodes,tree);
             }
         }
@@ -56,9 +56,9 @@ function init_bnr(){
        The resulting array can be used to compute
        the function result fast.
      */
-    root.bnr.define_function = function(nodes,id){
+    g_root.bnr.define_function = function(nodes,id){
         // Get tree
-        var f_steps = root.bnr
+        var f_steps = g_root.bnr
             .reverse_tree(nodes,id);
 
         // add end
@@ -80,7 +80,7 @@ function init_bnr(){
         }
 
         if(f_start == -1){
-            root.happy_accident(
+            g_root.happy_accident(
                 id,
                 "cannot find function start"
             )
@@ -94,8 +94,8 @@ function init_bnr(){
         }
     };
 
-    root.bnr.calculate_steps = function(nodes,steps){
-        root.bnr.calculate_async(nodes,steps,0);
+    g_root.bnr.calculate_steps = function(nodes,steps){
+        g_root.bnr.calculate_async(nodes,steps,0);
     };
 
     /* This is interesting
@@ -108,7 +108,7 @@ function init_bnr(){
        This allows asynchronous fun like querying the web
        or processing data somewhere.
     */
-    root.bnr.calculate_async = function(nodes,steps,layer){
+    g_root.bnr.calculate_async = function(nodes,steps,layer){
         if(layer == undefined){
             layer = 0
         } else if (layer >= steps.length){
@@ -120,13 +120,13 @@ function init_bnr(){
         function callback(){
             blocking--;
             if(blocking <= 0){
-                root.bnr
+                g_root.bnr
                     .calculate_async(nodes,steps,layer + 1);
             }
         }
 
         for(var i = 0; i < steps[layer].length; i++){
-            var msg = root.bnr
+            var msg = g_root.bnr
                 .calculate(nodes, steps[layer][i],callback);
             if(msg == "wait"){
                 block = true;
@@ -144,7 +144,7 @@ function init_bnr(){
        Then gives all the step nodes.
        Starting from the earliest outputs.
     */
-    root.bnr.reverse_tree = function(nodes,id,steps){
+    g_root.bnr.reverse_tree = function(nodes,id,steps){
         var steps = steps || [];
 
         // Make sure parents results are found
@@ -154,7 +154,7 @@ function init_bnr(){
         for(var i = 0; i < inputs.length; i++){
             substeps.push(inputs[i][0]);
             if(inputs[i][0] != -1){
-                root.bnr
+                g_root.bnr
                     .reverse_tree(
                         nodes,inputs[i][0],steps
                     );
@@ -166,14 +166,14 @@ function init_bnr(){
         return steps;
     }
 
-    root.bnr.calculate = function(nodes,id,callback){
+    g_root.bnr.calculate = function(nodes,id,callback){
         if(id == -1 || nodes[id] == false){
             return;
         }
         var ret;
         var system = nodes[id].system;
         var type = nodes[id].type;
-        var nt = root.node_systems[system][type];
+        var nt = g_root.node_systems[system][type];
         if(nt.calculate != undefined){
             ret = nt.calculate(nodes,id,callback);
         } else {
@@ -187,7 +187,7 @@ function init_bnr(){
         return ret;
     }
 
-    root.get_input_result = function(nodes,id){
+    g_root.get_input_result = function(nodes,id){
         var inputs = nodes[id].inputs;
         var result = [];
 
@@ -208,9 +208,9 @@ function init_bnr(){
         return result;
     }
 
-    root.node_for_id = function(id){
+    g_root.node_for_id = function(id){
         return SQSA(
-            root.cont,
+            g_root.cont,
             "[data-node-id='"+id+"']"
         )[0];
     }

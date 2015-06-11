@@ -1,5 +1,5 @@
-function array_node_types(root){
-    var root = root;
+function array_node_types(g_root){
+    var g_root = g_root;
     var output_nodes = [];
 
     var types = {
@@ -77,7 +77,7 @@ function array_node_types(root){
                 var arr = [];
 
                 if(step == 0){
-                    root.happy_accident(
+                    g_root.happy_accident(
                         id,
                         "A step of 0 is impossible."
                     )
@@ -104,10 +104,10 @@ function array_node_types(root){
             calculate: function(nodes,id){
                 var self = nodes[id];
                 var name = self.settings["function"];
-                var res = root.get_input_result(nodes,id);
+                var res = g_root.get_input_result(nodes,id);
                 var arr = deep_copy(res[0]);
                 for(var i = 0, l = arr.length; i < l;i++){
-                    var end = root.bnr
+                    var end = g_root.bnr
                         .run_function(
                             nodes,
                             name,
@@ -134,7 +134,7 @@ function array_node_types(root){
             calculate: function(nodes,id){
                 var self = nodes[id];
                 var name = self.settings["function"];
-                var res = root.get_input_result(nodes,id);
+                var res = g_root.get_input_result(nodes,id);
                 var arr = res[0];
                 if(arr[0] == null){
                     self.result = [null];

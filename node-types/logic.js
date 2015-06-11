@@ -1,5 +1,5 @@
-function logic_node_types(root){
-    var root = root;
+function logic_node_types(g_root){
+    var g_root = g_root;
 
     var types = {
         "condition": {
@@ -14,7 +14,7 @@ function logic_node_types(root){
             },
             calculate: function(nodes,id){
                 var self = nodes[id];
-                var inputs = root.get_input_result(nodes,id);
+                var inputs = g_root.get_input_result(nodes,id);
                 var settings = self.settings;
                 var a = inputs[0];
                 var b = inputs[1];
@@ -54,7 +54,7 @@ function logic_node_types(root){
             },
             calculate: function(nodes,id){
                 var self = nodes[id];
-                var inputs = root.get_input_result(nodes,id);
+                var inputs = g_root.get_input_result(nodes,id);
                 var settings = self.settings;
                 var a = inputs[0];
                 var b = inputs[1];
@@ -81,7 +81,7 @@ function logic_node_types(root){
             },
             calculate: function(nodes,id){
                 var self = nodes[id];
-                var inputs = root.get_input_result(nodes,id);
+                var inputs = g_root.get_input_result(nodes,id);
                 var a = inputs[0];
                 var b = inputs[1];
                 var c = inputs[2];

@@ -1,5 +1,5 @@
-function general_node_types(root){
-    var root = root;
+function general_node_types(g_root){
+    var g_root = g_root;
     var types = {
         "value output": {
             inputs: ["value/array"],
@@ -7,14 +7,14 @@ function general_node_types(root){
             icon: "fa-table",
             title_info: "Array table output",
             oncreate: function(node,id){
-                var node = root.node_for_id(id);
+                var node = g_root.node_for_id(id);
                 var div = create_dom("div","");
                 add_class(div,"value-display");
                 SQSA(node,"content")[0].appendChild(div);
-                root.output_nodes.push(id);
+                g_root.output_nodes.push(id);
             },
             onresult: function(nodes,id){
-                var res = root.get_input_result(nodes,id);
+                var res = g_root.get_input_result(nodes,id);
                 if(Array.isArray(res[0])){
                     output_table(nodes,id,res);
                 } else if(typeof(res[0] === 'object')){
@@ -25,7 +25,7 @@ function general_node_types(root){
             },
             calculate: function(nodes,id){
                 var self = nodes[id];
-                var res = root.get_input_result(nodes,id);
+                var res = g_root.get_input_result(nodes,id);
                 self.result = [res[0]];
             },
             settings: {
@@ -54,7 +54,7 @@ function general_node_types(root){
                 var has_max = max != "";
                 var min = parseFloat(self.settings['min']);
                 var max = parseFloat(self.settings['max']);
-                var res = root.get_input_result(nodes,id);
+                var res = g_root.get_input_result(nodes,id);
                 var arr = deep_copy(res[0]);
                 
                 function limit(val){
@@ -90,7 +90,7 @@ function general_node_types(root){
             },
             calculate: function(nodes,id){
                 var self = nodes[id];
-                var inputs = root.get_input_result(nodes,id);
+                var inputs = g_root.get_input_result(nodes,id);
                 var settings = nodes[id].settings;
                 var a = deep_copy(inputs[0]);
                 var b = deep_copy(inputs[1]);
@@ -104,7 +104,7 @@ function general_node_types(root){
                                 return op(v,b[i]);
                             });
                         } else {
-                            root.happy_accident(
+                            g_root.happy_accident(
                                 id,
                                 "The arrays do not " +
                                     " have the same size"
@@ -172,7 +172,7 @@ function general_node_types(root){
                 }
             },
             oncreate: function(node,id){
-                var node = root.node_for_id(id);
+                var node = g_root.node_for_id(id);
                 add_class(node,"note-node");
             },
             onresult: function(nodes,id){
@@ -184,20 +184,20 @@ function general_node_types(root){
     };
 
     function output_value(nodes,id,res){
-        var node = root.node_for_id(id);
+        var node = g_root.node_for_id(id);
         var d = SQSA(node,".value-display")[0];
         d.textContent = res[0];
     }
 
     function output_object(nodes,id,res){
-        var node = root.node_for_id(id);
+        var node = g_root.node_for_id(id);
         var d = SQSA(node,".value-display")[0];
         d.textContent = JSON.stringify(res[0]);
     }
     
     function output_table(nodes,id,res){
         var data = res[0];
-        var node = root.node_for_id(id);
+        var node = g_root.node_for_id(id);
         var d = SQSA(node,".value-display")[0];
         d.innerHTML = "";
         var table = create_dom("table","");

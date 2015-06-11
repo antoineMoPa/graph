@@ -1,5 +1,5 @@
-function viz_node_types(root){
-    var root = root;
+function viz_node_types(g_root){
+    var g_root = g_root;
     var types = {
         "chart": {
             inputs: ["x values array","y values array"],
@@ -7,7 +7,7 @@ function viz_node_types(root){
             outputs: [],
             icon: "fa-bar-chart",
             oncreate: function(node,id){
-                var node = root.node_for_id(id);
+                var node = g_root.node_for_id(id);
                 var div = create_dom("div","");
                 add_class(div,"chart");
                 var content = SQSA(node,"content")[0];
@@ -16,17 +16,17 @@ function viz_node_types(root){
                     .append("svg");
                 node.style.width = "400px";
                 
-                root.output_nodes.push(id);
+                g_root.output_nodes.push(id);
             },
             onresult: function(nodes,id){
-                var node = root.node_for_id(id);
+                var node = g_root.node_for_id(id);
                 var self = nodes[id];
-                var res = root.get_input_result(nodes,id);
+                var res = g_root.get_input_result(nodes,id);
                 graph(node,res,self.settings);
             },
             calculate: function(nodes,id){
                 var self = nodes[id];
-                var res = root.get_input_result(nodes,id);
+                var res = g_root.get_input_result(nodes,id);
                 self.result = [res[0]];
             },
             settings: {

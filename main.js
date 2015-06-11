@@ -4,7 +4,7 @@ var root = {};
 
 /* LOAD ALL ASSETS */
 (function(){
-    var base_path = window.GRAPH_BASE_PATH;
+    var base_path = window.GRAPH_BASE_PATH || "";
     /* Load script that will load other scripts */ 
     var script = document.createElement("script");
     script.setAttribute("src",base_path + "network.js");
@@ -83,6 +83,7 @@ root.new_graphs = function(containers){
 };
 
 root.new_graph = function(container){
+    var g_root;
     var node_systems;
     var dragging;
     var canvas = null;
@@ -97,26 +98,26 @@ root.new_graph = function(container){
     init_globals();
     
     function init_globals(){
-        root = {};
-        root.cont = container;
-        root.draw_links = draw_links;
-        root.output_nodes = [];
-        root.happy_accident = happy_accident;
-        root.node_systems = 
+        g_root = {};
+        g_root.cont = container;
+        g_root.draw_links = draw_links;
+        g_root.output_nodes = [];
+        g_root.happy_accident = happy_accident;
+        g_root.node_systems = 
             node_systems = {
-                general: general_node_types(root),
-                web: web_node_types(root),
-                flow: flow_node_types(root),
-                number: number_node_types(root),
-                logic: logic_node_types(root),
-                array: array_node_types(root),
-                visualization: viz_node_types(root),
-                spectrum: spectrum_node_types(root)
+                general: general_node_types(g_root),
+                web: web_node_types(g_root),
+                flow: flow_node_types(g_root),
+                number: number_node_types(g_root),
+                logic: logic_node_types(g_root),
+                array: array_node_types(g_root),
+                visualization: viz_node_types(g_root),
+                spectrum: spectrum_node_types(g_root)
             }
-        init_bnr(root);
+        init_bnr(g_root);
         sheet = new_sheet();
         removed_ids = [];
-        root.sheet = sheet;
+        g_root.sheet = sheet;
         dragging = null;
     }
 
@@ -134,12 +135,11 @@ root.new_graph = function(container){
     enable_global_drag();
     init_board_menu();
     init_add_menu();
-    init_panels_ui();
+    init_panels_ui(g_root.cont);
     init_keyboard();
     enable_move_sheet();
     
-    var nodes = container
-        .querySelectorAll(".nodes")[0];
+    var nodes = SQSA(container,".nodes")[0];
     
     function resize(){
         w = canvas.width = container.clientWidth;
@@ -150,7 +150,7 @@ root.new_graph = function(container){
     var storage = window.localStorage;
     var ls = storage.saved_node_sheet || DEFAULT_SHEET;
 
-    root.sheet = 
+    g_root.sheet = 
         sheet = JSON.parse(ls);
     
     init_from_sheet(sheet);
@@ -161,7 +161,7 @@ root.new_graph = function(container){
     draw_links();
 
     function init_from_sheet(sh){
-        sheet = sh;
+        g_root.sheet = sheet = sh;
         var nodes = sh.nodes;
         for(var i = 0; i < nodes.length; i++){
             if(nodes[i] != false){
@@ -223,7 +223,7 @@ root.new_graph = function(container){
     
     function some_value_has_changed(){
         clear_happy_errors();
-        root.bnr.run(sheet.nodes);
+        g_root.bnr.run(sheet.nodes);
         save_to_localstorage();
     }
 
@@ -272,7 +272,7 @@ root.new_graph = function(container){
               ){
                 var nt = node_systems[system][type];
             } else {
-                console.log(
+                console.error(
                     "Type " +
                         type +
                         " in system " +
@@ -451,10 +451,10 @@ root.new_graph = function(container){
         div.appendChild(close_button);
         div.appendChild(content);
         close_button.onclick = remove;
-        document.body.appendChild(div);
+        g_root.cont.appendChild(div);
 
         function remove(){
-            document.body.removeChild(div);
+            g_root.cont.removeChild(div);
         }
         
         return {
@@ -463,14 +463,14 @@ root.new_graph = function(container){
     }
     
     function init_board_menu(){
-        var menu = QSA(".menu-panel-board")[0];
+        var menu = SQSA(container,".menu-panel-board")[0];
         
         var actions = [
             {
                 name: "Save",
                 icon: "fa-cloud-download",
                 action: function(){
-                    var data = deep_copy(root.sheet);
+                    var data = deep_copy(g_root.sheet);
                     for(var i = 0; i < data.nodes.length; i++){
                         data.nodes[i].result = undefined;
                     }
@@ -532,7 +532,7 @@ root.new_graph = function(container){
                 
         function init_button(dom,action){
             dom.onclick = function(){
-                close_menu_panels();
+                close_menu_panels(container);
                 action();
             };
         }
@@ -540,7 +540,7 @@ root.new_graph = function(container){
 
     function clear_sheet(){
         init_globals();
-        var nodes = QSA(".node");
+        var nodes = SQSA(container,".node");
         for(var i = 0; i < nodes.length;i++){
             if(nodes[i].tagName != "canvas"){
                 nodes[i].parentNode
@@ -555,7 +555,7 @@ root.new_graph = function(container){
        Happy little panel
     */
     function init_add_menu(){
-        var menu = QSA(".menu-panel-add")[0];
+        var menu = SQSA(container,".menu-panel-add")[0];
         
         for(var i in node_systems){
             var node_types = node_systems[i];
@@ -584,7 +584,7 @@ root.new_graph = function(container){
         }
         function init_add_button(dom,system,type){
             dom.onclick = function(){
-                close_menu_panels();
+                close_menu_panels(container);
                 add_node(system,type);
             };
         }
@@ -650,8 +650,8 @@ root.new_graph = function(container){
     }
 
     function start_drag(e){
-        root.initial_drag_pos = get_pos(e);
-        root.initial_drag_el_pos = get_el_pos(dragging);
+        g_root.initial_drag_pos = get_pos(e);
+        g_root.initial_drag_el_pos = get_el_pos(dragging);
     }
 
     function get_pos(e){
@@ -715,22 +715,26 @@ root.new_graph = function(container){
         // move up
         listen_keycode(38,function(e){
             e.preventDefault();
-            move_all_nodes(sheet.nodes,0,move_dist());
+            var nodes = g_root.sheet.nodes;
+            move_all_nodes(nodes,0,move_dist());
         });
         // right
         listen_keycode(39,function(e){
             e.preventDefault();
-            move_all_nodes(sheet.nodes,-move_dist(),0);
+            var nodes = g_root.sheet.nodes;
+            move_all_nodes(nodes,-move_dist(),0);
         });
         // down
         listen_keycode(40,function(e){
             e.preventDefault()
-            move_all_nodes(sheet.nodes,0,-move_dist());
+            var nodes = g_root.sheet.nodes;
+            move_all_nodes(nodes,0,-move_dist());
         });
         // left
         listen_keycode(37,function(e){
             e.preventDefault();
-            move_all_nodes(sheet.nodes,move_dist(),0);
+            var nodes = g_root.sheet.nodes;
+            move_all_nodes(nodes,move_dist(),0);
         });
     }
     
@@ -743,11 +747,11 @@ root.new_graph = function(container){
                 if(dragging != null){
                     var current_pos = get_pos(e);
                     diff = get_pos_diff(
-                        root.initial_drag_pos,
+                        g_root.initial_drag_pos,
                         current_pos
                     );
-                    diff[0] += root.initial_drag_el_pos[0];
-                    diff[1] += root.initial_drag_el_pos[1];
+                    diff[0] += g_root.initial_drag_el_pos[0];
+                    diff[1] += g_root.initial_drag_el_pos[1];
                     set_el_pos(dragging,diff);
                     last_update = now;
                     draw_links();
@@ -837,7 +841,8 @@ root.new_graph = function(container){
             arr[1]+
             "']";
 
-        return QSA(
+        return SQSA(
+            container,
             sel
         )[0];
     }
@@ -902,17 +907,17 @@ root.new_graph = function(container){
     */
     function happy_accident(node_id, message){
         var dom = create_dom("happyerror",message);
-        root.node_for_id(node_id).appendChild(dom);
+        g_root.node_for_id(node_id).appendChild(dom);
     }
-
+    
     function clear_happy_errors(){
-        var errs = QSA("happyerror");
+        var errs = SQSA(container,"happyerror");
         for(var i = 0; i < errs.length; i++){
             var el = errs[i];
             el.parentNode.removeChild(el);
         }
     }
-}
+};
 
 function run_tests(){
     assert(

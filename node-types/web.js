@@ -1,5 +1,5 @@
-function web_node_types(root){
-    var root = root;
+function web_node_types(g_root){
+    var g_root = g_root;
     var server_url = "http://127.0.0.1:8000"
     var proxy_url = server_url + "/proxy?url=";
 
@@ -53,11 +53,11 @@ function web_node_types(root){
             },
             calculate: function(nodes,id,callback){
                 var self = nodes[id];
-                var inputs = root.get_input_result(nodes,id);
+                var inputs = g_root.get_input_result(nodes,id);
                 try{
                     var res = JSON.parse(inputs[0]);
                 } catch(e){
-                    root.happy_accident(id,"could not understand JSON");
+                    g_root.happy_accident(id,"could not understand JSON");
                 }
                 self.result = [res];
             }
@@ -74,14 +74,14 @@ function web_node_types(root){
                 }
             },
             oncreate: function(node,id){
-                root.output_nodes.push(id);
+                g_root.output_nodes.push(id);
                 var div = create_dom("div","");
                 add_class(div,"json-el-list");
                 SQSA(node,"content")[0].appendChild(div);
             },
             calculate: function(nodes,id,callback){
                 var self = nodes[id];
-                var inputs = root.get_input_result(nodes,id);
+                var inputs = g_root.get_input_result(nodes,id);
                 var name = self.settings.part;
                 if(inputs[0] == undefined){
                     var part = {};

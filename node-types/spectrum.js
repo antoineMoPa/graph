@@ -1,5 +1,5 @@
-function spectrum_node_types(root){
-    var root = root;
+function spectrum_node_types(g_root){
+    var g_root = g_root;
     var cie_data = null;
     var lspdd_lamps = {};
     // Build proxy url
@@ -16,7 +16,7 @@ function spectrum_node_types(root){
             outputs: [],
             icon: "fa-bar-chart",
             oncreate: function(node,id){
-                var node = root.node_for_id(id);
+                var node = g_root.node_for_id(id);
                 var div = create_dom("div","");
                 var content = SQSA(node,"content")[0];
                 add_class(div,"chart");
@@ -24,12 +24,12 @@ function spectrum_node_types(root){
                 // more width
                 node.style.width = "600px";
                 // hey, this is an output node!
-                root.output_nodes.push(id);
+                g_root.output_nodes.push(id);
             },
             onresult: function(nodes,id){
-                var node = root.node_for_id(id);
+                var node = g_root.node_for_id(id);
                 var self = nodes[id];
-                var res = root.get_input_result(nodes,id);
+                var res = g_root.get_input_result(nodes,id);
                 var chart_div = SQSA(node,".chart")[0];
                 // create svg
                 var chart = d3.select(chart_div)
@@ -39,7 +39,7 @@ function spectrum_node_types(root){
             },
             calculate: function(nodes,id){
                 var self = nodes[id];
-                var res = root.get_input_result(nodes,id);
+                var res = g_root.get_input_result(nodes,id);
                 self.result = [res[0]];
             },
             settings: {
@@ -52,13 +52,13 @@ function spectrum_node_types(root){
             outputs: ["wavelength","intensity"],
             icon: "fa-lightbulb-o",
             oncreate: function(node,id){
-                var node = root.node_for_id(id);
+                var node = g_root.node_for_id(id);
                 var div = create_dom("div","");
             },
             onresult: function(nodes,id){
-                var node = root.node_for_id(id);
+                var node = g_root.node_for_id(id);
                 var self = nodes[id];
-                var res = root.get_input_result(nodes,id);
+                var res = g_root.get_input_result(nodes,id);
             },
             calculate: function(nodes,id,callback){
                 var self = nodes[id];
@@ -104,13 +104,13 @@ function spectrum_node_types(root){
             outputs: ["wavelength","intensity"],
             icon: "fa-lightbulb-o",
             oncreate: function(node,id){
-                var node = root.node_for_id(id);
+                var node = g_root.node_for_id(id);
                 var div = create_dom("div","");
             },
             onresult: function(nodes,id){
-                var node = root.node_for_id(id);
+                var node = g_root.node_for_id(id);
                 var self = nodes[id];
-                var res = root.get_input_result(nodes,id);
+                var res = g_root.get_input_result(nodes,id);
             },
             calculate: function(nodes,id,callback){
                 var self = nodes[id];
