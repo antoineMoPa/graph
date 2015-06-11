@@ -1,0 +1,54 @@
+<!-- W3C, please abolish this useless doctype thing -->
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>GRAPH UI CODE DOC</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <header>
+            <h1>GRAPH UI CODE DOC</h1>
+        </header>
+        <div class="content">
+            <section>
+                <h2>Creating node types</h2>
+                <p>
+                    For example, let's take the current version of the node that takes a number as input:
+                </p>
+                <pre>
+"number": {
+    inputs: [],
+    outputs: ["number"],
+    icon: "fa-calculator",
+    settings: {
+        number:{
+            type: "float",
+            value: 0,
+        }
+    },
+    calculate: function(nodes,id){
+        var self = nodes[id];
+        self.result = [
+            parseFloat(nodes[id].settings["number"])
+        ];
+    }
+}</pre>
+            </section>
+            <section>
+                <h2>Creating Forms For Nodes</h2>
+                
+            </section>
+            <section>
+                <h2>Common User Interface functions and tools | common-ui.js</h2>
+                <h3>QSA(selector), SQSA(someElement,selector)</h3>
+                <p>
+                    They return an array of DOM elements.<br>
+                    
+                    You should limit your use of these to the bare minimum.<br>
+                    (Don't select an element twice. Keep a reference to it in memory!)
+                </p>
+            </section>
+        </div>
+    </body>
+</html>
