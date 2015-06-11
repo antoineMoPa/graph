@@ -86,6 +86,8 @@ root.new_graph = function(container){
     var g_root;
     var node_systems;
     var dragging;
+    /* Use LocalStorage autosave? */
+    var autosave = has_class(container,"ls-autosave");
     var canvas = null;
     var ctx = null;
     var w = 0;
@@ -228,8 +230,10 @@ root.new_graph = function(container){
     }
 
     function save_to_localstorage(){
-        window.localStorage.saved_node_sheet
-            = JSON.stringify(sheet);
+        if(autosave){
+            window.localStorage.saved_node_sheet
+                = JSON.stringify(sheet);
+        }
     }
 
     function add_node(system,type){
