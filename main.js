@@ -134,11 +134,11 @@ root.new_graph = function(container){
     init_ui_dom();
     canvas = SQSA(container,"canvas")[0];
     ctx = canvas.getContext("2d");
-    enable_global_drag();
+    enable_mouse();
     init_board_menu();
     init_add_menu();
     init_panels_ui(g_root.cont);
-    init_keyboard();
+    init_keyboard(g_root);
     enable_move_sheet();
     
     var nodes = SQSA(container,".nodes")[0];
@@ -604,12 +604,12 @@ root.new_graph = function(container){
     
     function enable_node_mouse_down(node){
         var header = SQSA(node,".node-header")[0];
-        window.listen_key("D");
+        g_root.listen_key(g_root,"D");
         node.onmousedown = function(e){
             bring_node_to_top(node);
         }
         header.onmousedown = function(e){
-            if(keyboard.keys["D"]){
+            if(g_root.keyboard.keys["D"]){
                 // delete node
                 var id = node
                     .getAttribute("data-node-id");
@@ -683,7 +683,8 @@ root.new_graph = function(container){
         el.style.top = pos[1] + "px";
     }
 
-    function move_all_nodes(nodes,left,top){
+    function move_all_nodes(left,top){
+        var nodes = sheet.nodes;
         for(var i = 0; i < nodes.length; i++){
             if(nodes[i] == false){
                 continue;
@@ -700,6 +701,7 @@ root.new_graph = function(container){
     
     function enable_move_sheet(){
         var last_move = new Date().getTime();
+        var last_key = -1;
         /*
           Nice move function distance
           that depends on time since last move
@@ -707,42 +709,47 @@ root.new_graph = function(container){
           Improvement idea: make it depend on key
           
          */
-        function move_dist(){
+        function move_dist(key){
             var current_move = new Date().getTime();
+            // If user changes direction,
+            // reset speed
+            if(key != last_key){
+                last_move -= 2000;
+            }
             // I found this value friendly
-            var factor = 1000;
+            var factor = 1;
             // Value that depends on last click
-            var add = factor * 1/(current_move - last_move);
+            var delta_t = current_move - last_move;
+            var max_speed = 20;
+            speed = max_speed * (1-1/(delta_t*1000));
+            add = speed;
+
             last_move = current_move;
+            last_key = key;
             return add;
         }
-        // move up
-        listen_keycode(38,function(e){
-            e.preventDefault();
-            var nodes = g_root.sheet.nodes;
-            move_all_nodes(nodes,0,move_dist());
-        });
-        // right
-        listen_keycode(39,function(e){
-            e.preventDefault();
-            var nodes = g_root.sheet.nodes;
-            move_all_nodes(nodes,-move_dist(),0);
-        });
-        // down
-        listen_keycode(40,function(e){
-            e.preventDefault()
-            var nodes = g_root.sheet.nodes;
-            move_all_nodes(nodes,0,-move_dist());
-        });
-        // left
-        listen_keycode(37,function(e){
-            e.preventDefault();
-            var nodes = g_root.sheet.nodes;
-            move_all_nodes(nodes,move_dist(),0);
-        });
+        
+        enable_key_move(38,0,1);
+        enable_key_move(39,-1,0);
+        enable_key_move(40,0,-1);
+        enable_key_move(37,1,0);
+        
+        function enable_key_move(key,x,y){
+            g_root.listen_keycode
+            (g_root,key,function(e){
+                if(g_root.active){
+                    e.preventDefault();
+                    var dist = move_dist(key);
+                    move_all_nodes(
+                        x*dist,
+                        y*dist
+                    );
+                }
+            });
+        }
     }
     
-    function enable_global_drag(){
+    function enable_mouse(){
         var last_update = new Date().getTime();
 
         function mousemove(e){
@@ -772,18 +779,28 @@ root.new_graph = function(container){
             }
             dragging = null;
         }
+
+        function mouseenter(){
+            g_root.active = true;
+        }
         
-        window.addEventListener("mousemove",mousemove);
-        window.addEventListener("mouseup",mouseup);
+        function mouseleave(){
+            g_root.active = false;
+        }
+        
+        g_root.cont.addEventListener("mousemove",mousemove);
+        g_root.cont.addEventListener("mouseup",mouseup);
+        g_root.cont.addEventListener("mouseenter",mouseenter);
+        g_root.cont.addEventListener("mouseleave",mouseleave);
     }
 
     function set_node_position(id,left,top){
         var node_dom_el = get_node(id);
         if(left == undefined){
-            left = node_dom_el.style.left;
+            left = parseInt(node_dom_el.style.left);
         }
         if(top == undefined){
-            top = node_dom_el.style.top;
+            top = parseInt(node_dom_el.style.top);
         }
         set_el_pos(node_dom_el,[left,top]);
         sheet.nodes[id].left = parseInt(left);

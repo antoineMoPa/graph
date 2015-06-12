@@ -128,44 +128,45 @@ function close_menu_panels(container){
     }
 }
 
-function listen_keycode(keycode,callback){
-    // create shortcut var
-    var kcc = window.keyboard.keycode_callbacks;
-    // Create array if not exist
-    if(kcc[keycode] == undefined){
-        kcc[keycode] = [];
-    }
-    // add event listener
-    kcc[keycode].push(callback);
-}
-
-function init_keyboard(){
-    window.keyboard = {};
+function init_keyboard(root){
+    root.keyboard = {};
+    var keyboard = root.keyboard;
     keyboard.callbacks = [];
     keyboard.keycode_callbacks = [];
-    window.keyboard.keys = {};
+    root.keyboard.keys = {};
 
-    window.listen_key = function(key){
+    root.listen_key = function(key){
         if(!(key in keyboard.keys)){
             keyboard.keys[key] = false;
         }
     };
 
-    document.onkeydown = function(e){
+    root.listen_keycode = function(root,keycode,callback){
+        // create shortcut var
+        var kcc = root.keyboard.keycode_callbacks;
+        // Create array if not exist
+        if(kcc[keycode] == undefined){
+            kcc[keycode] = [];
+        }
+        // add event listener
+        kcc[keycode].push(callback);
+    };
+    
+    window.addEventListener("keydown",function(e){
         str = String.fromCharCode(e.keyCode);
         // Sorry for this short var name
         // kc stands for  keyboardcallback
-        var kc = keyboard.callbacks[str];
+        var kc = root.keyboard.callbacks[str];
         for(var callback in kc){
             kc[callback](e);
         }
         // kcc stands for  keycodecallback
-        var kcc = keyboard.keycode_callbacks[e.keyCode];
+        var kcc = root.keyboard.keycode_callbacks[e.keyCode];
         for(var callback in kcc){
             kcc[callback](e);
         }
         set_current_key(e,true);
-    };
+    });
 
     document.onkeyup = function(e){
         set_current_key(e,false);
@@ -242,12 +243,8 @@ function enableInput(html_input, data_array, index, callback){
     }
 }
 
-function init_spreadsheet(
-    dom,
-    input,
-    settings,
-    name,
-    callback){
+function init_spreadsheet
+(dom,input,settings,name,callback){
     var table = SQSA(dom,"table")[0];
     var input = SQSA(dom,"input")[0];
     var row_num = 0;
