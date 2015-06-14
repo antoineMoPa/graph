@@ -310,6 +310,7 @@ function init_spreadsheet
             cell.oncopy =
             cell.onkeydown =
             function(e){
+                e.stopPropagation();
                 if(e.keyCode == 13 || e.keyCode == 40){
                     e.preventDefault();
                     // enter
