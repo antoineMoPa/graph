@@ -149,14 +149,35 @@ root.new_graph = function(container){
         draw_links();
     }
 
-    var storage = window.localStorage;
-    var ls = storage.saved_node_sheet || DEFAULT_SHEET;
+    // Is there a JSON array passed with the dom element ?
+    var sheet_from_attr = container
+        .getAttribute("data-sheet") || "";
 
-    g_root.sheet = 
-        sheet = JSON.parse(ls);
+    if(sheet_from_attr != ""){
+        // If the attribute was passed, we use it
+        load_from_string(sheet_from_attr);
+    } else {
+        // Otherwise, we load from browser storage
+        load_from_localStorage();
+    }
+
+    function load_from_string(str){
+        g_root.sheet = 
+            sheet = JSON.parse(str);
+        
+        init_from_sheet(sheet);
+    }
     
-    init_from_sheet(sheet);
-
+    function load_from_localStorage(){
+        var storage = window.localStorage;
+        var ls = storage.saved_node_sheet || DEFAULT_SHEET;
+        
+        g_root.sheet = 
+            sheet = JSON.parse(ls);
+        
+        init_from_sheet(sheet);
+    }
+    
 
     resize();
     window.addEventListener("resize",resize)
