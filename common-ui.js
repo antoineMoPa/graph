@@ -130,14 +130,14 @@ function close_menu_panels(container){
 
 function init_keyboard(root){
     root.keyboard = {};
+    root.keyboard.keys = {};
     var keyboard = root.keyboard;
     keyboard.callbacks = [];
     keyboard.keycode_callbacks = [];
-    root.keyboard.keys = {};
-
-    root.listen_key = function(key){
-        if(!(key in keyboard.keys)){
-            keyboard.keys[key] = false;
+    
+    root.listen_key = function(root,key){
+        if(!(key in root.keyboard.keys)){
+            root.keyboard.keys[key] = false;
         }
     };
 
