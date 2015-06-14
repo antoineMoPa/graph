@@ -14,35 +14,102 @@
             <section>
                 <h2>Creating node types</h2>
                 <p>
-                    For example, let's take the current version of the node that takes a number as input:
+                    A new node type is simply a JS object that contains:
+
+                    <ul>
+                        <li>Node <strong>input</strong> list,</li>
+                        <li>Node <strong>output</strong> list,</li>
+                        <li>Required user <strong>input field</strong> list,</li>
+                        <li>A function that is executed to <strong>calculate</strong> the result of the node.</li>
+                    </ul>
+                    
+                    For example, let's take the current version of "number" node:
                 </p>
                 <pre>
-"number": {
-    inputs: [],
-    outputs: ["number"],
-    icon: "fa-calculator",
+"number": {                                             /* Give your node a name */
+    inputs: [],                                         /* This one has no inputs */
+    outputs: ["number"],                                /* There is one output: the user's number */
+    icon: "fa-calculator",                              /* Choose an Icon from FontAwesome or leave empty */
+    settings: {                                         /* This will automatically create the form */
+        number:{                                        /* Name your parameters */
+            type: "float",                              /* A different type will render different html */
+            value: 0,                                   /* You may give a default value */
+        }
+    },
+calculate: function(nodes,id){                          /* The function that will be used to
+                                                           calculate every "number" nodes */
+        var self = nodes[id];                           /* Use this to get the current node */
+        self.result = [                                 /* You need to set this array for use by connected nodes! */
+            parseFloat(self.settings["number"])         /* This is how you get form input values. */
+        ];
+    }
+}</pre>
+                <p>And you get this wonderful result:</p>
+                <div style="width:30%;height:500px;margin-top:20px;" class="graph-embed"
+                     data-sheet='{"nodes":[{"system":"number","type":"number","top":64,"left":9,"inputs":[],"settings":{"number":"2"}},{"system":"general","type":"value output","top":263,"left":102,"inputs":[["0","0"]],"settings":{}}]}'>
+                </div>
+                <h2>More complex example with inputs</h2>
+                <pre>
+"trigonometry": {
+    inputs: ["number"],
+    outputs: ["output"],
+    icon: "fa-circle-thin",
     settings: {
-        number:{
-            type: "float",
-            value: 0,
+        "function":{
+            type: "either",                                /* "either" creates an html &lt;select&gt; element */
+            values: ["sin","cos","tan"],
+            value: "sin",
         }
     },
     calculate: function(nodes,id){
         var self = nodes[id];
-        self.result = [
-            parseFloat(nodes[id].settings["number"])
-        ];
+        <strong>var inputs = g_root.get_input_result(nodes,id);</strong>    /* This is how you get results from connected nodes */
+        var settings = self.settings;
+        var a = inputs[0];                                 /* Let's get the number */
+        var operation;
+        switch(settings["function"]){                      /* Depending on settings, we return sin, cos or tan */
+        case "sin":
+            operation = function(a){
+                return Math.sin(a);
+            }
+            break;
+        case "cos":
+            operation = function(a){
+                return Math.cos(a);
+            }
+            break;
+        case "tan":
+            operation = function(a){
+                return Math.tan(a);
+            }
+            break;
+        }
+
+                                                           /* We'll check if input is an array or a simple number */
+        var res;                                           /* We run the operation on all the values of the array */
+        if(Array.isArray(a)){
+            res = [];
+            for(var i = 0; i < a.length; i++){
+                res[i] = operation(a[i]);
+            }
+        } else {                                           /* Or on the number */
+            res = operation(a);
+        }
+        self.result = [res];                               /* Then we set the values for other nodes */
     }
 }</pre>
-                <div style="width:30%;height:500px;" class="graph-embed"
-                     data-sheet='{"nodes":[{"system":"number","type":"number","top":64,"left":9,"inputs":[],"settings":{"number":0}}]}'>
-                </div>
-                <div style="width:100%;height:500px;" class="graph-embed">
-                </div>
             </section>
             <section>
                 <h2>Creating Forms For Nodes</h2>
-                
+                <h3>Input types:</h3>
+                <ul>
+                    <li>either: a &lt;select&gt; element</li>
+                    <li>string: a text &lt;input&gt; element</li>
+                    <li>float: a &lt;input type="number" step="any"&gt; element</li>
+                    <li>integer: a &lt;input type="number" step="1" min="0"&gt; element</li>
+                    <li>text: a &lt;textarea&gt;</li>
+                    <li>spreadsheet: some complex array input that bugs most of the time.</li>
+                </ul>
             </section>
             <section>
                 <h2>Embedding</h2>
@@ -66,6 +133,11 @@ var my_elements = SQSA(g_root.cont,".some-class");</pre>
                     (Don't select an element twice. Keep a reference to it in a variable!)
                 </p>
             </section>
+            <section>
+                <h2>What is g_root and root</h2>
+                
+            </section>
+
         </div>
 
         <script name="graph-embed" src="../../embed.js"></script>
