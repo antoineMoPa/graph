@@ -100,7 +100,15 @@ root.new_graph = function(container){
     init_globals();
     
     function init_globals(){
+        var old_g_root = g_root || null;
         g_root = {};
+        if(old_g_root == null){
+            // Listen keyboard
+            init_keyboard(g_root);
+        } else {
+            // keep keyboard
+            g_root.keyboard = old_g_root.keyboard;
+        }
         g_root.cont = container;
         g_root.draw_links = draw_links;
         g_root.output_nodes = [];
@@ -127,7 +135,6 @@ root.new_graph = function(container){
         container.innerHTML =
             get_html("graph-ui") +
             get_html("graph-canvas-ui");
-        
     }
 
     add_class(container,"graph-ui-container");
@@ -138,7 +145,6 @@ root.new_graph = function(container){
     init_board_menu();
     init_add_menu();
     init_panels_ui(g_root.cont);
-    init_keyboard(g_root);
     enable_move_sheet();
     
     var nodes = SQSA(container,".nodes")[0];
@@ -625,7 +631,7 @@ root.new_graph = function(container){
     
     function enable_node_mouse_down(node){
         var header = SQSA(node,".node-header")[0];
-        g_root.listen_key(g_root,"D");
+        g_root.keyboard.listen_key(g_root,"D");
         node.onmousedown = function(e){
             bring_node_to_top(node);
         }
@@ -756,7 +762,7 @@ root.new_graph = function(container){
         enable_key_move(37,1,0);
         
         function enable_key_move(key,x,y){
-            g_root.listen_keycode
+            g_root.keyboard.listen_keycode
             (g_root,key,function(e){
                 if(g_root.active){
                     e.preventDefault();

@@ -135,13 +135,13 @@ function init_keyboard(root){
     keyboard.callbacks = [];
     keyboard.keycode_callbacks = [];
     
-    root.listen_key = function(root,key){
+    root.keyboard.listen_key = function(root,key){
         if(!(key in root.keyboard.keys)){
             root.keyboard.keys[key] = false;
         }
     };
 
-    root.listen_keycode = function(root,keycode,callback){
+    root.keyboard.listen_keycode = function(root,keycode,callback){
         // create shortcut var
         var kcc = root.keyboard.keycode_callbacks;
         // Create array if not exist
@@ -151,7 +151,7 @@ function init_keyboard(root){
         // add event listener
         kcc[keycode].push(callback);
     };
-    
+
     window.addEventListener("keydown",function(e){
         str = String.fromCharCode(e.keyCode);
         // Sorry for this short var name
