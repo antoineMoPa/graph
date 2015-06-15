@@ -39,9 +39,9 @@ pre{
     margin:15px 0;
     font-family:'monospace';
 }
-p{
+p,ul{
     margin-top:20px;
-    font-size:18px;
+    font-size:17px;
     font-weight:300;
 }
 ul{

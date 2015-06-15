@@ -837,7 +837,7 @@ root.new_graph = function(container){
     
     function draw_links(){
         ctx.clearRect(0,0,w,h);
-        var nodes = sheet.nodes;
+        var nodes = g_root.sheet.nodes;
         for(var i = 0; i < nodes.length; i++){
             if(nodes[i] === false){
                 continue;
@@ -851,7 +851,6 @@ root.new_graph = function(container){
                         get_output([input[0],input[1]]);
                     in_socket =
                         get_input([i,j]);
-                    
                     draw_socket_link(out_socket,in_socket);
                 }
             }

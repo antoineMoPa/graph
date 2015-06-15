@@ -11,19 +11,22 @@
             <h1>GRAPH UI CODE DOC</h1>
         </header>
         <div class="content">
+            <div style="width:100%;width:calc(100% - 60px);height:230px;margin:20px;margin:auto;" class="graph-embed"
+                 data-sheet='{"nodes":[{"system":"number","type":"string","top":71,"left":24,"inputs":[],"settings":{"string":"Hello World!"}},{"system":"general","type":"value output","top":125,"left":1042,"inputs":[["0","0"]],"settings":{}}]}'>
+            </div>
             <section>
                 <h2>Creating node types</h2>
                 <p>
                     A new node type is simply a JS object that contains:
-
+                </p>
                     <ul>
                         <li>Node <strong>input</strong> list,</li>
                         <li>Node <strong>output</strong> list,</li>
                         <li>Required user <strong>input field</strong> list,</li>
                         <li>A function that is executed to <strong>calculate</strong> the result of the node.</li>
                     </ul>
-                    
-                    For example, let's take the current version of "number" node:
+                <p>
+                    For example, let's take the current version of the "number" node:
                 </p>
                 <pre>
 "number": {                                             /* Give your node a name */
@@ -45,10 +48,21 @@ calculate: function(nodes,id){                          /* The function that wil
     }
 }</pre>
                 <p>And you get this wonderful result:</p>
-                <div style="width:30%;height:500px;margin-top:20px;" class="graph-embed"
+                <div style="width:30%;height:500px;margin-top:20px;margin:auto;" class="graph-embed"
                      data-sheet='{"nodes":[{"system":"number","type":"number","top":64,"left":9,"inputs":[],"settings":{"number":"2"}},{"system":"general","type":"value output","top":263,"left":102,"inputs":[["0","0"]],"settings":{}}]}'>
                 </div>
                 <h2>More complex example with inputs</h2>
+                <p>
+                    The "trigonometry" node returns Math.cos()/sin()/tan() depending on the value of a dropdown select box.
+                </p>
+                <p>
+                    By looking at the code, you will see how to get:
+                </p>
+                <ul>
+                    <li>The selected value of a dropdown &lt;select&gt;</li>
+                    <li>Result values from input nodes</li>
+                    <li>How to find out if an input is an Array</li>
+                </ul>
                 <pre>
 "trigonometry": {
     inputs: ["number"],
@@ -67,7 +81,7 @@ calculate: function(nodes,id){                          /* The function that wil
         var settings = self.settings;
         var a = inputs[0];                                 /* Let's get the number */
         var operation;
-        switch(settings["function"]){                      /* Depending on settings, we return sin, cos or tan */
+        switch(<strong>settings["function"]</strong>){                      /* Depending on settings, we return sin, cos or tan */
         case "sin":
             operation = function(a){
                 return Math.sin(a);
@@ -87,7 +101,7 @@ calculate: function(nodes,id){                          /* The function that wil
 
                                                            /* We'll check if input is an array or a simple number */
         var res;                                           /* We run the operation on all the values of the array */
-        if(Array.isArray(a)){
+        if(<strong>Array.isArray(a)</strong>){
             res = [];
             for(var i = 0; i < a.length; i++){
                 res[i] = operation(a[i]);
@@ -98,46 +112,71 @@ calculate: function(nodes,id){                          /* The function that wil
         self.result = [res];                               /* Then we set the values for other nodes */
     }
 }</pre>
+                <p>
+                    Result:
+                </p>
+                <div style="width:30%;height:500px;margin-top:20px;margin:auto;" class="graph-embed"
+                     data-sheet='{"nodes":[{"system":"number","type":"number","top":70,"left":18,"inputs":[],"settings":{"number":"0.5"}},{"system":"number","type":"trigonometry","top":230,"left":89,"inputs":[["0","0"]],"settings":{"function":"sin"}},{"system":"general","type":"value output","top":390,"left":151,"inputs":[["1","0"]],"settings":{}}]}'>
+                </div>
             </section>
             <section>
                 <h2>Creating Forms For Nodes</h2>
-                <h3>Input types:</h3>
+                <p>
+                    To create forms, fill the <i>settings</i> element of your node type.
+                </p>
+                <p>
+                    There is already a "backend" that will create the html forms, store the user's value
+                    and present it to you in a nice variable.
+                </p>
+                <pre>
+                    
+settings: {
+    "function":{
+        type: "either",
+        values: ["sin","cos","tan"],
+        value: "sin",
+    },
+    "some_param":{
+        ...
+    }
+    ...
+}</pre>
+                <h3>Available Input Types:</h3>
                 <ul>
-                    <li>either: a &lt;select&gt; element</li>
-                    <li>string: a text &lt;input&gt; element</li>
-                    <li>float: a &lt;input type="number" step="any"&gt; element</li>
-                    <li>integer: a &lt;input type="number" step="1" min="0"&gt; element</li>
-                    <li>text: a &lt;textarea&gt;</li>
-                    <li>spreadsheet: some complex array input that bugs most of the time.</li>
+                    <li><strong>either</strong>: a &lt;select&gt; element</li>
+                    <li><strong>string</strong>: a text &lt;input&gt; element</li>
+                    <li><strong>float</strong>: a &lt;input type="number" step="any"&gt; element</li>
+                    <li><strong>integer</strong>: a &lt;input type="number" step="1" min="0"&gt; element</li>
+                    <li><strong>text</strong>: a &lt;textarea&gt;</li>
+                    <li><strong>spreadsheet</strong>: some complex array input that bugs most of the time.</li>
                 </ul>
+                <p>
+                    If you need more, code it! (Then, pull request?)
+                </p>
             </section>
             <section>
                 <h2>Embedding</h2>
-                
+                <p>Just look at the source code of this page.</p>
             </section>
 
             <section>
                 <h2>Common User Interface functions and tools | common-ui.js</h2>
                 <h3>QSA(selector), SQSA(someElement,selector)</h3>
                 <p>
-                    They return an array of DOM elements.<br>
+                    These functions are simply shortcuts to querySelectorAll which
+                    returns an array of DOM elements matching your css selector.<br>
                 </p>
                 <p>
                     You should always use <strong>SQSA</strong> with g_root.cont in order
-                    to make sure your script <strong>does not interfere</strong> with other instances of graph:<br>
-
-                    <pre>
+                    to make sure your script <strong>does not interfere</strong> with other instances of graph:
+                </p>
+                <pre>
+// g_root.cont is the root element of the current graph
 var my_elements = SQSA(g_root.cont,".some-class");</pre>
-                    
-                    You should limit your use of these to the bare minimum.<br>
-                    (Don't select an element twice. Keep a reference to it in a variable!)
+                <p>
+                    Don't select an element twice. Keep a reference to what you will reuse in a variable!
                 </p>
             </section>
-            <section>
-                <h2>What is g_root and root</h2>
-                
-            </section>
-
         </div>
 
         <script name="graph-embed" src="../../embed.js"></script>
