@@ -249,3 +249,8 @@ label{.graph-ui-container
     overflow-y:auto;
     margin-bottom:20px;
 }
+
+.graph-ui-container .node content{
+    max-height:500px;
+    overflow-y:auto;
+}

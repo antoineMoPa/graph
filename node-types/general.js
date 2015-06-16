@@ -110,6 +110,7 @@ function general_node_types(g_root){
                                     " have the same size"
                             );
                             res = [];
+                            return;
                         }
                     } else if(Array.isArray(a)) {
                         res = a.map(function(v,i,arr){
@@ -216,7 +217,8 @@ function general_node_types(g_root){
             table.appendChild(row);
         }
         function add_cell(content,row,table){
-            var cell = create_dom("td",content);
+            var val = content.toFixed(10)+""
+            var cell = create_dom("td",val);
             row.appendChild(cell);
         }
         d.appendChild(table);

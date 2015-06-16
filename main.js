@@ -102,6 +102,7 @@ root.new_graph = function(container){
     function init_globals(){
         var old_g_root = g_root || null;
         g_root = {};
+        g_root.tools = {};
         if(old_g_root == null){
             // Listen keyboard
             init_keyboard(g_root);
@@ -113,6 +114,7 @@ root.new_graph = function(container){
         g_root.draw_links = draw_links;
         g_root.output_nodes = [];
         g_root.happy_accident = happy_accident;
+        g_root.clear_happy_errors = clear_happy_errors;
         g_root.node_systems = 
             node_systems = {
                 general: general_node_types(g_root),
@@ -270,8 +272,8 @@ root.new_graph = function(container){
             deep_copy({
                 system: system,
                 type: type,
-                top: 200,
-                left: 200,
+                top: 70,
+                left: 20,
                 inputs: empty_inputs(),
                 settings: empty_settings()
             });
@@ -729,33 +731,7 @@ root.new_graph = function(container){
     function enable_move_sheet(){
         var last_move = new Date().getTime();
         var last_key = -1;
-        /*
-          Nice move function distance
-          that depends on time since last move
-          
-          Improvement idea: make it depend on key
-          
-         */
-        function move_dist(key){
-            var current_move = new Date().getTime();
-            // If user changes direction,
-            // reset speed
-            if(key != last_key){
-                last_move -= 2000;
-            }
-            // I found this value friendly
-            var factor = 1;
-            // Value that depends on last click
-            var delta_t = current_move - last_move;
-            var max_speed = 20;
-            speed = max_speed * (1-1/(delta_t*1000));
-            add = speed;
 
-            last_move = current_move;
-            last_key = key;
-            return add;
-        }
-        
         enable_key_move(38,0,1);
         enable_key_move(39,-1,0);
         enable_key_move(40,0,-1);
@@ -765,12 +741,15 @@ root.new_graph = function(container){
             g_root.keyboard.listen_keycode
             (g_root,key,function(e){
                 if(g_root.active){
-                    e.preventDefault();
-                    var dist = move_dist(key);
-                    move_all_nodes(
-                        x*dist,
-                        y*dist
-                    );
+                    var now = new Date().getTime();
+                    if(now - last_move > 100){
+                        last_move = now;
+                        e.preventDefault();
+                        move_all_nodes(
+                            x*30,
+                        y*30
+                        );
+                    }
                 }
             });
         }
@@ -781,6 +760,7 @@ root.new_graph = function(container){
 
         function mousemove(e){
             var now = new Date().getTime();
+            g_root.active = true;
             if(now - last_update > 40){
                 if(dragging != null){
                     var current_pos = get_pos(e);
@@ -829,6 +809,7 @@ root.new_graph = function(container){
         if(top == undefined){
             top = parseInt(node_dom_el.style.top);
         }
+        
         set_el_pos(node_dom_el,[left,top]);
         sheet.nodes[id].left = parseInt(left);
         sheet.nodes[id].top = parseInt(top);
@@ -957,8 +938,8 @@ root.new_graph = function(container){
         g_root.node_for_id(node_id).appendChild(dom);
     }
     
-    function clear_happy_errors(){
-        var errs = SQSA(container,"happyerror");
+    function clear_happy_errors(id){
+        var errs = SQSA(g_root.cont,"happyerror");
         for(var i = 0; i < errs.length; i++){
             var el = errs[i];
             el.parentNode.removeChild(el);

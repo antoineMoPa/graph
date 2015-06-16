@@ -9,6 +9,10 @@ p.value-display{
     word-wrap:break-word;
 }
 
+.value-display table{
+    width:100%;
+}
+
 table td{
     background:#fff;
     padding:4px;

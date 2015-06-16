@@ -81,7 +81,7 @@ function spectrum_node_types(g_root){
                     // to find now available result
                     callback();
                 }
-                
+                return "wait";
             },
 
             settings: {
@@ -96,6 +96,55 @@ function spectrum_node_types(g_root){
                     ],
                     value: "D65"
                 }
+            }
+        },
+        "Make comparable": {
+            inputs: [
+                "spectrum 1 wavelength",
+                "spectrum 1 intensity",
+                "spectrum 2 wavelength",
+                "spectrum 2 intensity"
+            ],
+            info: "Takes values only within range covered by both spectra.",
+            outputs: [
+                "spectrum 1 wavelength",
+                "spectrum 1 intensity",
+                "spectrum 2 wavelength",
+                "spectrum 2 intensity"
+            ],
+            icon: "",
+            calculate: function(nodes,id,callback){
+                var self = nodes[id];
+                var res = g_root.get_input_result(nodes,id);
+
+                // Some shortcut variables
+                var s1w = res[0] || [];
+                var s1i = res[1] || [];
+                var s2w = res[2] || [];
+                var s2i = res[3] || [];
+
+                // Find the greatest min of 2 spectra
+                var min = d3.max(
+                    [
+                        d3.min(s1w),
+                        d3.min(s2w)
+                    ]
+                );
+
+                // Find lowest max of 2 spectra
+                var max = d3.min(
+                    [
+                        d3.max(s1w),
+                        d3.max(s2w)
+                    ]
+                );
+
+                
+                
+                console.log(min,max);
+            },
+
+            settings: {
             }
         },
         "LSPDD lamp spectrum": {
@@ -158,6 +207,7 @@ function spectrum_node_types(g_root){
                     // Hey node runner, there are results !
                     callback();
                 }
+                return "wait";
             },
             settings: {
                 "lamp_id": {

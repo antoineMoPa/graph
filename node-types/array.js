@@ -48,6 +48,40 @@ function array_node_types(g_root){
                 self.result = [arr];
             }
         },
+        "limit by x values": {
+            inputs: ["x","y"],
+            outputs: ["x","y"],
+            icon: "",
+            info: "Returns elements with x values within specified range and if they are a multiple of step",
+            settings: {
+                "from":{
+                    type: "float",
+                    value: "0",
+                },
+                "to":{
+                    type: "float",
+                    value: "10",
+                },
+                "step":{
+                    type: "float",
+                    value: "0.5",
+                }
+            },
+            calculate: function(nodes,id){
+                var self = nodes[id];
+                var settings = nodes[id].settings;
+                var res = g_root.get_input_result(nodes,id);
+                var from = parseFloat(settings.from);
+                var to = parseFloat(settings.to);
+                var step = parseFloat(settings.step) || "";
+
+                var xs = res[0] || [];
+                var ys = res[1] || [];
+                
+                var res = g_root
+                    .clip_by_x_values(xs,ys,from,to,step);
+            }
+        },
         "range": {
             inputs: [],
             outputs: ["array"],
@@ -136,24 +170,68 @@ function array_node_types(g_root){
                 var name = self.settings["function"];
                 var res = g_root.get_input_result(nodes,id);
                 var arr = res[0];
-                if(arr[0] == null){
-                    self.result = [null];
+                if(arr == undefined){
                     return;
                 }
-                var res_arr = new Array(arr[0].length);
-                for(var i = 0; i < res_arr.length; i++){
-                    res_arr[i] = 0;
-                }
-                for(var i = 0; i < arr.length;i++){
-                    for(var j = 0; j < arr[i].length;j++){
-                        res_arr[j] += parseFloat(arr[i][j]);
+                if(Array.isArray(arr[0])){
+                    // We likely have an array of arrays
+                    // Let's return the sum of every
+                    // sub array
+                    if(arr[0] == null){
+                        console.log(arr);
+                        self.result = [null];
+                        return;
                     }
+                    var res_arr = new Array(arr[0].length);
+                    for(var i = 0; i < res_arr.length; i++){
+                        res_arr[i] = 0;
+                    }
+                    for(var i = 0; i < arr.length;i++){
+                        for(var j = 0; j < arr[i].length;j++){
+                            var curr =
+                                parseFloat(arr[i][j]) || 0
+                            res_arr[j] += curr;
+                        }
+                    }
+                    self.result = [res_arr];
+                } else {
+                    // We have an array
+                    // Lets sum all values
+                    var res = 0;
+                    for(var i = 0; i < arr.length;i++){
+                        res += arr[i] || 0;
+                    }
+                    self.result = [res];
                 }
-                self.result = [res_arr];
             }
         }
     };
 
+    /*
+      Clip array by x values
+      from "from"
+      to "to"
+      by taking only values at each step
+     */
+    g_root.tools.clip_x_values = function
+    (xs,ys,from,to,step){
+        var new_xs = [];
+        var new_ys = [];
+        
+        for(var i = 0; i < xs.length; i++){
+            if(xs[i] > from && xs[i] < to){
+                if(step != "" && xs[i] % step == 0){
+                    new_xs.push(xs[i]);
+                    new_ys.push(ys[i]);
+                }
+            }
+        }
+        
+        self.result = [
+            deep_copy(new_xs),
+            deep_copy(new_ys)
+        ];
+    }
 
     return types;
 }
